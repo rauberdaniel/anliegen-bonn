@@ -45,8 +45,18 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
     }
     
     func sendConcern(sender: AnyObject) {
-        if let service: Service = service {
-            self.parentViewController?.dismissViewControllerAnimated(true, completion: {})
+        sendButton.enabled = false
+        if let service: Service = service, location = location {
+            let concern = Concern()
+            concern.service = service
+            concern.location = location
+            ApiHandler.sharedHandler.submitConcern(concern, completionHandler: { (response, data, error) -> Void in
+                if error == nil {
+                    self.parentViewController?.dismissViewControllerAnimated(true, completion: {})
+                } else {
+                    self.sendButton.enabled = true
+                }
+            })
         } else {
             // no service specified
             let alert = UIAlertView(title: "No Service specified", message: "Please specify a service to submit your concern.", delegate: nil, cancelButtonTitle: "Ok")

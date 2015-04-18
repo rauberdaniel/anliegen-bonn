@@ -55,32 +55,11 @@ class MasterViewController: UITableViewController {
     // MARK: - Data
     
     func reloadData(sender: AnyObject) {
-        let url = NSURL(string: "http://anliegen.bonn.de/georeport/v2/requests.json?status=open")
-        let request = NSURLRequest(URL: url!)
-        NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (response, data, error) -> Void in
-            let concerns = self.parseData(data)
+        ApiHandler.sharedHandler.getConcerns { (concerns) -> Void in
             self.objects = concerns
-            //self.objects = self.sortByDistance(concerns)
             self.tableView.reloadData()
             self.refreshControl?.endRefreshing()
         }
-    }
-    
-    func sortByDistance(concerns:[Concern]) -> [Concern] {
-        return concerns
-    }
-    
-    func parseData(data: NSData) -> [Concern] {
-        var output = [Concern]()
-        var error: NSError?
-        let concerns = NSJSONSerialization.JSONObjectWithData(data, options: .MutableLeaves, error: &error) as! NSArray
-        for c in concerns {
-            if let cDict:NSDictionary = c as? NSDictionary {
-                let concern = Concern(fromDictionary: cDict)
-                output.append(concern)
-            }
-        }
-        return output
     }
 
     // MARK: - Segues
@@ -112,7 +91,7 @@ class MasterViewController: UITableViewController {
         let cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath) as! UITableViewCell
 
         let concern = objects[indexPath.row]
-        cell.textLabel!.text = concern.title
+        cell.textLabel!.text = concern.service.name
         cell.detailTextLabel!.text = "\(NSDate.shortStringFromDate(concern.dateReported)) — \(concern.locationName)"
         
         return cell

@@ -18,12 +18,12 @@ class Concern: NSObject, CLLocationManagerDelegate {
             //updateLocationName()
         }
     }
-    var title: String = ""
     var desc: String = ""
+    var service: Service
     
     override init() {
         dateReported = NSDate()
-        title = "Concern"
+        service = Service(code: "0000", name: "Undefined")
     }
     
     init(fromDictionary dict: NSDictionary) {
@@ -36,8 +36,10 @@ class Concern: NSObject, CLLocationManagerDelegate {
         } else {
             dateReported = NSDate()
         }
-        if let name = dict["service_name"] as? String {
-            title = name
+        if let name = dict["service_name"] as? String, code = dict["service_code"] as? String {
+            service = Service(code: code, name: name)
+        } else {
+            service = Service(code: "0000", name: "Undefined")
         }
         if let address = dict["address"] as? String {
             locationName = address
@@ -59,6 +61,16 @@ class Concern: NSObject, CLLocationManagerDelegate {
         })
     }
     
-    
+    func getJSONData() -> NSData? {
+        let dict: NSMutableDictionary = NSMutableDictionary()
+        dict.setValue(service.name, forKey: "service_name")
+        dict.setValue(service.code, forKey: "service_code")
+        dict.setValue(location?.coordinate.latitude, forKey: "lat")
+        dict.setValue(location?.coordinate.longitude, forKey: "long")
+        
+        var parseError: NSError?
+        let data = NSJSONSerialization.dataWithJSONObject(dict, options: NSJSONWritingOptions.allZeros, error: &parseError)
+        return data
+    }
     
 }

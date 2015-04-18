@@ -24,9 +24,9 @@ class DetailViewController: UITableViewController {
     func configureView() {
         // Update the user interface for the detail item.
         if let detail: Concern = self.detailItem {
-            title = detail.title
+            title = detail.service.name
             if let label = self.detailDescriptionLabel {
-                label.text = detail.title
+                label.text = detail.service.name
             }
         }
     }
