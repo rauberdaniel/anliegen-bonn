@@ -13,8 +13,6 @@
 		656840201AE2F326008A8D31 /* ApiHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6568401F1AE2F326008A8D31 /* ApiHandler.swift */; };
 		656840231AE3067C008A8D31 /* AddViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 656840211AE3067C008A8D31 /* AddViewController.swift */; };
 		656840241AE3067C008A8D31 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 656840221AE3067C008A8D31 /* AppDelegate.swift */; };
-		658F19091AE0E66B007DB575 /* MasterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 658F19081AE0E66B007DB575 /* MasterViewController.swift */; };
-		658F190B1AE0E66B007DB575 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 658F190A1AE0E66B007DB575 /* DetailViewController.swift */; };
 		658F190E1AE0E66B007DB575 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 658F190C1AE0E66B007DB575 /* Main.storyboard */; };
 		658F19101AE0E66B007DB575 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 658F190F1AE0E66B007DB575 /* Images.xcassets */; };
 		658F19131AE0E66B007DB575 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 658F19111AE0E66B007DB575 /* LaunchScreen.xib */; };
@@ -22,6 +20,7 @@
 		658F19291AE0E767007DB575 /* Concern.swift in Sources */ = {isa = PBXBuildFile; fileRef = 658F19281AE0E767007DB575 /* Concern.swift */; };
 		658F192B1AE0E814007DB575 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 658F192A1AE0E814007DB575 /* MapKit.framework */; };
 		658F192D1AE0E81A007DB575 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 658F192C1AE0E81A007DB575 /* CoreLocation.framework */; };
+		65C2A5DB1AE972EE007AFEC9 /* LocationSelectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65C2A5DA1AE972EE007AFEC9 /* LocationSelectionViewController.swift */; };
 		65E5B2D51AE137BF00DD4042 /* NSDateISO8601.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65E5B2D41AE137BF00DD4042 /* NSDateISO8601.swift */; };
 /* End PBXBuildFile section */
 
@@ -44,8 +43,6 @@
 		656840221AE3067C008A8D31 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		658F19011AE0E66B007DB575 /* cleanbn.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = cleanbn.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		658F19051AE0E66B007DB575 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		658F19081AE0E66B007DB575 /* MasterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MasterViewController.swift; sourceTree = "<group>"; };
-		658F190A1AE0E66B007DB575 /* DetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
 		658F190D1AE0E66B007DB575 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		658F190F1AE0E66B007DB575 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		658F19121AE0E66B007DB575 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
@@ -55,6 +52,7 @@
 		658F19281AE0E767007DB575 /* Concern.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Concern.swift; sourceTree = "<group>"; };
 		658F192A1AE0E814007DB575 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		658F192C1AE0E81A007DB575 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		65C2A5DA1AE972EE007AFEC9 /* LocationSelectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationSelectionViewController.swift; sourceTree = "<group>"; };
 		65E5B2D41AE137BF00DD4042 /* NSDateISO8601.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSDateISO8601.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -111,8 +109,6 @@
 			isa = PBXGroup;
 			children = (
 				654536431AE2C8BB007C0A1E /* Services */,
-				658F19081AE0E66B007DB575 /* MasterViewController.swift */,
-				658F190A1AE0E66B007DB575 /* DetailViewController.swift */,
 				658F190C1AE0E66B007DB575 /* Main.storyboard */,
 				658F190F1AE0E66B007DB575 /* Images.xcassets */,
 				658F19111AE0E66B007DB575 /* LaunchScreen.xib */,
@@ -121,8 +117,9 @@
 				65E5B2D41AE137BF00DD4042 /* NSDateISO8601.swift */,
 				654536411AE2BB9C007C0A1E /* ConcernTypeViewController.swift */,
 				6568401F1AE2F326008A8D31 /* ApiHandler.swift */,
-				656840211AE3067C008A8D31 /* AddViewController.swift */,
 				656840221AE3067C008A8D31 /* AppDelegate.swift */,
+				65C2A5DA1AE972EE007AFEC9 /* LocationSelectionViewController.swift */,
+				656840211AE3067C008A8D31 /* AddViewController.swift */,
 			);
 			path = cleanbn;
 			sourceTree = "<group>";
@@ -259,10 +256,9 @@
 				65E5B2D51AE137BF00DD4042 /* NSDateISO8601.swift in Sources */,
 				654536451AE2C8D4007C0A1E /* ServiceManager.swift in Sources */,
 				654536471AE2C9C8007C0A1E /* Service.swift in Sources */,
-				658F190B1AE0E66B007DB575 /* DetailViewController.swift in Sources */,
 				656840201AE2F326008A8D31 /* ApiHandler.swift in Sources */,
+				65C2A5DB1AE972EE007AFEC9 /* LocationSelectionViewController.swift in Sources */,
 				656840241AE3067C008A8D31 /* AppDelegate.swift in Sources */,
-				658F19091AE0E66B007DB575 /* MasterViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

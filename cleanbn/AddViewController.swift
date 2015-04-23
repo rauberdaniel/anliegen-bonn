@@ -17,27 +17,24 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
     @IBOutlet weak var serviceCell: UITableViewCell!
     @IBOutlet weak var sendButton: UIButton!
     @IBOutlet weak var photoButton: UIButton!
+    @IBOutlet weak var photoCell: UITableViewCell!
     
     let locationManager = CLLocationManager()
-    var location: CLLocation? {
-        didSet {
-            locationUpdated()
-        }
-    }
+    var location: CLLocation?
     var service: Service? {
         didSet {
             updateService()
         }
     }
     var image: UIImage?
-    var customLocationAnnotation: MKPointAnnotation?
+    let customLocationAnnotation = MKPointAnnotation()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do view setup here.
         
-        let cancelButton = UIBarButtonItem(barButtonSystemItem: .Cancel, target: self, action: "cancel:")
-        self.navigationItem.leftBarButtonItem = cancelButton
+        //let cancelButton = UIBarButtonItem(barButtonSystemItem: .Cancel, target: self, action: "cancel:")
+        //self.navigationItem.leftBarButtonItem = cancelButton
         
         streetCell.textLabel?.text = ""
         
@@ -50,33 +47,10 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
         locationManager.requestWhenInUseAuthorization()
         
         mapView.delegate = self
-        
-        // add long press gesture to map
-        let lpgr = UILongPressGestureRecognizer(target: self, action: "handleLongPress:")
-        lpgr.delegate = self
-        mapView.addGestureRecognizer(lpgr)
-        
         updateMap()
     }
     
-    func handleLongPress(sender: UILongPressGestureRecognizer) {
-        if sender.state != UIGestureRecognizerState.Began {
-            return
-        }
-        let coordinate = mapView.convertPoint(sender.locationInView(mapView), toCoordinateFromView: mapView)
-        location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
-        if customLocationAnnotation == nil {
-            customLocationAnnotation = MKPointAnnotation()
-            customLocationAnnotation?.coordinate = coordinate
-            mapView.addAnnotation(customLocationAnnotation)
-        } else {
-            customLocationAnnotation?.coordinate = coordinate
-        }
-    }
-    
-    func cancel(sender: AnyObject) {
-        self.parentViewController?.dismissViewControllerAnimated(true, completion: {})
-    }
+    // MARK: - Submission
     
     func sendConcern(sender: AnyObject) {
         sendButton.enabled = false
@@ -98,28 +72,20 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
         }
     }
     
-    func capturePhoto(sender: AnyObject) {
-        if UIImagePickerController.isSourceTypeAvailable(.Camera) {
-            let imagePicker = UIImagePickerController()
-            imagePicker.delegate = self
-            imagePicker.mediaTypes = [kUTTypeImage]
-            imagePicker.allowsEditing = false
-            imagePicker.sourceType = .Camera
-            
-            self.presentViewController(imagePicker, animated: true, completion: {})
-            
-        }
-    }
-    
-    func locationManager(manager: CLLocationManager!, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
-        if customLocationAnnotation == nil {
-            updateMap()
-        }
+    func cancel(sender: AnyObject) {
+        self.parentViewController?.dismissViewControllerAnimated(true, completion: {})
     }
     
     func updateMap() {
-        if CLLocationManager.authorizationStatus() == .AuthorizedWhenInUse {
-            mapView.showsUserLocation = true
+        if let coord = location?.coordinate {
+            let span = MKCoordinateSpanMake(0.004, 0.004)
+            let region = MKCoordinateRegionMake(coord, span)
+            if let mapView = mapView {
+                mapView.setRegion(region, animated: true)
+                mapView.addAnnotation(customLocationAnnotation)
+            }
+            customLocationAnnotation.coordinate = coord
+            updateLocationName()
         }
     }
     
@@ -130,22 +96,6 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
         } else {
             serviceCell.detailTextLabel?.text = "Unknown"
             sendButton.enabled = false
-        }
-    }
-    
-    func mapView(mapView: MKMapView!, didUpdateUserLocation userLocation: MKUserLocation!) {
-        if customLocationAnnotation == nil {
-            // if there is no custom location set, the new location is the user location
-            location = userLocation.location
-        }
-    }
-    
-    func locationUpdated() {
-        if let coord = location?.coordinate {
-            let span = MKCoordinateSpanMake(0.005, 0.005)
-            let region: MKCoordinateRegion = MKCoordinateRegionMake(coord, span)
-            mapView.setRegion(region, animated: true)
-            updateLocationName()
         }
     }
     
@@ -162,6 +112,7 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
                     }
                 }
                 self.streetCell.textLabel?.text = street
+                self.streetCell.setNeedsLayout()
             }
         })
     }
@@ -179,17 +130,33 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
         if let image = info[NSString(string: "UIImagePickerControllerOriginalImage")] as? UIImage {
             // TODO: Resize Image
             // TODO: Display Image
+            photoButton.removeFromSuperview()
+            let imageView = UIImageView(image: image)
+            imageView.clipsToBounds = true
+            imageView.contentMode = UIViewContentMode.ScaleAspectFit
+            imageView.frame = CGRectMake(0, 0, photoCell.frame.width, photoCell.frame.height)
+            photoCell.addSubview(imageView)
+            let cellHeight = photoCell.frame.width/image.size.width * image.size.height
             self.image = image
         }
         self.dismissViewControllerAnimated(true, completion: {})
     }
     
-    // MARK: - TableView
-    
-    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        if indexPath.section == 0 {
-            tableView.deselectRowAtIndexPath(indexPath, animated: false)
+    func capturePhoto(sender: AnyObject) {
+        if UIImagePickerController.isSourceTypeAvailable(.Camera) {
+            let imagePicker = UIImagePickerController()
+            imagePicker.delegate = self
+            imagePicker.mediaTypes = [kUTTypeImage]
+            imagePicker.allowsEditing = false
+            imagePicker.sourceType = .Camera
+            
+            self.presentViewController(imagePicker, animated: true, completion: {})
         }
     }
     
+    // MARK: - TableView
+    
+    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        
+    }
 }
