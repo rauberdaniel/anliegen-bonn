@@ -61,6 +61,33 @@ class MasterViewController: UITableViewController {
             self.refreshControl?.endRefreshing()
         }
     }
+    
+    // MARK: - UI
+    
+    func getImageWithColor(color: UIColor, size: CGSize) -> UIImage {
+        var rect = CGRectMake(0, 0, size.width, size.height)
+        UIGraphicsBeginImageContextWithOptions(size, false, 0)
+        color.setFill()
+        UIRectFill(rect)
+        var image: UIImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return image
+    }
+    
+    func getImageForState(state: String?) -> UIImage? {
+        var color: UIColor?
+        if state == "closed" {
+            color = UIColor(red: 246/255, green: 80/255, blue: 86/255, alpha: 1)
+        }
+        if state == "open" {
+            color = UIColor(red: 70/255, green: 204/255, blue: 74/255, alpha: 1)
+        }
+        
+        if let color = color {
+            return getImageWithColor(color, size: CGSizeMake(6, 59.5))
+        }
+        return nil
+    }
 
     // MARK: - Segues
 
@@ -93,6 +120,10 @@ class MasterViewController: UITableViewController {
         let concern = objects[indexPath.row]
         cell.textLabel!.text = concern.service.name
         cell.detailTextLabel!.text = "\(NSDate.shortStringFromDate(concern.dateReported)) — \(concern.locationName)"
+        
+        let stateMarker = UIImageView(frame: CGRectMake(0, 0, 6, 59.5))
+        stateMarker.image = getImageForState(concern.state)
+        cell.contentView.addSubview(stateMarker)
         
         return cell
     }

@@ -8,6 +8,7 @@
 
 import Foundation
 import CoreLocation
+import UIKit
 
 class Concern: NSObject, CLLocationManagerDelegate {
     
@@ -20,6 +21,8 @@ class Concern: NSObject, CLLocationManagerDelegate {
     }
     var desc: String = ""
     var service: Service
+    var imageUrl: String?
+    var state: String?
     
     override init() {
         dateReported = NSDate()
@@ -49,6 +52,12 @@ class Concern: NSObject, CLLocationManagerDelegate {
         }
         if let lat = dict["lat"] as? NSNumber, lon = dict["long"] as? NSNumber {
             location = CLLocation(latitude: lat.doubleValue, longitude: lon.doubleValue)
+        }
+        if let imageUrl = dict["media_url"] as? String {
+            self.imageUrl = imageUrl
+        }
+        if let state = dict["status"] as? String {
+            self.state = state
         }
     }
     

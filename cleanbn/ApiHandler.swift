@@ -16,7 +16,7 @@ class ApiHandler: NSObject {
     }
     
     func getConcerns(completionHandler: ([Concern]) -> Void) {
-        let url = NSURL(string: "http://anliegen.bonn.de/georeport/v2/requests.json?status=open")
+        let url = NSURL(string: "http://anliegen.bonn.de/georeport/v2/requests.json")
         let request = NSURLRequest(URL: url!)
         NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue(), completionHandler: { (response, data, error) -> Void in
             let concerns = self.parseData(data)

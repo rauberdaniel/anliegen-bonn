@@ -13,7 +13,7 @@ class DetailViewController: UITableViewController {
 
     @IBOutlet weak var detailDescriptionLabel: UILabel!
 
-
+    var image: UIImage?
     var detailItem: Concern? {
         didSet {
             // Update the view.
@@ -45,6 +45,9 @@ class DetailViewController: UITableViewController {
     // MARK: - Table View
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+        if let imageUrl: String = detailItem?.imageUrl {
+            return 4
+        }
         return 3
     }
     
@@ -54,6 +57,14 @@ class DetailViewController: UITableViewController {
     
     override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
         if indexPath.section == 1 {
+            return 60
+        }
+        if indexPath.section == 3 {
+            // image
+            if let height = image?.size.height, width = image?.size.width {
+                let viewWidth = tableView.frame.width
+                return height/width * viewWidth
+            }
             return 60
         }
         return 200
@@ -93,6 +104,30 @@ class DetailViewController: UITableViewController {
                 textView.text = desc
             }
             
+            return cell
+        case 3:
+            let cell = tableView.dequeueReusableCellWithIdentifier("ImageCell", forIndexPath: indexPath) as! UITableViewCell
+            
+            if let image = self.image {
+                (cell.viewWithTag(2) as! UIImageView).image = image
+                return cell
+            }
+            
+            if let urlString = detailItem?.imageUrl, imageUrl = NSURL(string: urlString), imageView = cell.viewWithTag(2) as? UIImageView {
+                
+                let request = NSURLRequest(URL: imageUrl)
+                NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue(), completionHandler: { (response, data, error) -> Void in
+                    if error == nil {
+                        let image = UIImage(data: data)
+                        self.image = image
+                        imageView.image = image
+                        self.tableView.beginUpdates()
+                        self.tableView.reloadRowsAtIndexPaths([NSIndexPath(forRow: 0, inSection: 3)], withRowAnimation: UITableViewRowAnimation.Fade)
+                        self.tableView.endUpdates()
+                    }
+                })
+                
+            }
             return cell
         default:
             let cell = tableView.dequeueReusableCellWithIdentifier("DescriptionCell", forIndexPath: indexPath) as! UITableViewCell
