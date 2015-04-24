@@ -36,7 +36,7 @@
                                 </connections>
                             </button>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="LocationMarker" translatesAutoresizingMaskIntoConstraints="NO" id="H19-2W-gI8">
-                                <rect key="frame" x="285" y="285" width="30" height="30"/>
+                                <rect key="frame" x="285" y="317" width="30" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="Y1G-HX-uPM"/>
                                     <constraint firstAttribute="width" constant="30" id="dWr-37-DI4"/>
@@ -83,9 +83,9 @@
                         <constraints>
                             <constraint firstItem="sxF-k4-Px7" firstAttribute="top" secondItem="RzF-Rd-cJ8" secondAttribute="bottom" constant="20" id="0tG-q7-c2r"/>
                             <constraint firstItem="yCV-iM-vuY" firstAttribute="centerX" secondItem="H19-2W-gI8" secondAttribute="centerX" id="4gz-Jk-vj4"/>
+                            <constraint firstItem="yCV-iM-vuY" firstAttribute="centerY" secondItem="H19-2W-gI8" secondAttribute="centerY" constant="-32" id="6xJ-GV-wV7"/>
                             <constraint firstAttribute="trailing" secondItem="yCV-iM-vuY" secondAttribute="trailing" id="6yB-Sv-rQX"/>
                             <constraint firstItem="RzF-Rd-cJ8" firstAttribute="trailing" secondItem="WEl-Vn-b0O" secondAttribute="trailingMargin" id="Nut-NU-WfE"/>
-                            <constraint firstItem="yCV-iM-vuY" firstAttribute="centerY" secondItem="H19-2W-gI8" secondAttribute="centerY" id="X6r-ki-h2N"/>
                             <constraint firstItem="NcJ-yp-cke" firstAttribute="trailing" secondItem="WEl-Vn-b0O" secondAttribute="trailingMargin" id="Yj1-oM-9fN"/>
                             <constraint firstItem="yCV-iM-vuY" firstAttribute="leading" secondItem="WEl-Vn-b0O" secondAttribute="leading" id="ZMu-Xl-6ca"/>
                             <constraint firstItem="RzF-Rd-cJ8" firstAttribute="top" secondItem="NcJ-yp-cke" secondAttribute="bottom" constant="8" id="bAK-df-nnU"/>
@@ -109,7 +109,7 @@
             </objects>
             <point key="canvasLocation" x="1431" y="-681"/>
         </scene>
-        <!--Add Concern-->
+        <!--Details-->
         <scene sceneID="4w9-Br-2dS">
             <objects>
                 <tableViewController id="TMU-fJ-NSk" customClass="AddViewController" customModule="cleanbn" customModuleProvider="target" sceneMemberID="viewController">
@@ -234,7 +234,7 @@
                             <outlet property="delegate" destination="TMU-fJ-NSk" id="E1g-cx-hLp"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Add Concern" id="x2S-Q6-ODf"/>
+                    <navigationItem key="navigationItem" title="Details" id="x2S-Q6-ODf"/>
                     <connections>
                         <outlet property="mapView" destination="aVI-ow-1bB" id="Li0-pQ-KGz"/>
                         <outlet property="photoButton" destination="nTV-vf-wPN" id="5LU-VT-oHD"/>

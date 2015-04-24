@@ -10,6 +10,7 @@ import UIKit
 import CoreLocation
 import MapKit
 import MobileCoreServices
+import CoreGraphics
 
 class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMapViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIGestureRecognizerDelegate {
     @IBOutlet weak var mapView: MKMapView!
@@ -28,6 +29,7 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
     }
     var image: UIImage?
     let customLocationAnnotation = MKPointAnnotation()
+    var locationName: String?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,7 +38,7 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
         //let cancelButton = UIBarButtonItem(barButtonSystemItem: .Cancel, target: self, action: "cancel:")
         //self.navigationItem.leftBarButtonItem = cancelButton
         
-        streetCell.textLabel?.text = ""
+        streetCell.textLabel?.text = locationName
         
         sendButton.addTarget(self, action: "sendConcern:", forControlEvents: .TouchUpInside)
         sendButton.enabled = false
@@ -66,13 +68,24 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
             let concern = Concern()
             concern.service = service
             concern.location = location
+            concern.locationName = locationName
+            concern.image = image
             ApiHandler.sharedHandler.submitConcern(concern, completionHandler: { (response, data, error) -> Void in
+                let res = NSString(data: data, encoding: NSUTF8StringEncoding)
                 if error == nil {
-                    self.parentViewController?.dismissViewControllerAnimated(true, completion: {})
+                    //self.parentViewController?.dismissViewControllerAnimated(true, completion: {})
+                    let alert = UIAlertController(title: "Concern sent", message: "Your concern has been successfully transmitted", preferredStyle: UIAlertControllerStyle.Alert)
+                    let action = UIAlertAction(title: "Ok", style: UIAlertActionStyle.Default, handler: { (action) -> Void in
+                        self.dismissViewControllerAnimated(true, completion: nil)
+                        self.navigationController?.popViewControllerAnimated(true)
+                    })
+                    alert.addAction(action)
+                    self.presentViewController(alert, animated: true, completion: nil)
                 } else {
                     self.sendButton.enabled = true
                 }
             })
+            
         } else {
             // no service specified
             let alert = UIAlertView(title: "No Service specified", message: "Please specify a service to submit your concern.", delegate: nil, cancelButtonTitle: "Ok")
@@ -82,6 +95,15 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
     
     func cancel(sender: AnyObject) {
         self.parentViewController?.dismissViewControllerAnimated(true, completion: {})
+    }
+    
+    func imageWithImage(image: UIImage, scaledToWidth width: CGFloat) -> UIImage {
+        let aspectRatio = image.size.height/image.size.width
+        UIGraphicsBeginImageContextWithOptions(CGSizeMake(width, width*aspectRatio), false, 1.0)
+        image.drawInRect(CGRectMake(0, 0, width, width*aspectRatio))
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return newImage
     }
     
     func updateMap() {
@@ -133,7 +155,6 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
     // MARK: - Image Controller
     
     func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [NSObject : AnyObject]) {
-        println("Got an Image: \(info)")
         if let image = info[NSString(string: "UIImagePickerControllerOriginalImage")] as? UIImage {
             // TODO: Resize Image
             // TODO: Display Image
@@ -143,8 +164,9 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
             imageView.contentMode = UIViewContentMode.ScaleAspectFit
             imageView.frame = CGRectMake(0, 0, photoCell.frame.width, photoCell.frame.height)
             photoCell.addSubview(imageView)
-            let cellHeight = photoCell.frame.width/image.size.width * image.size.height
-            self.image = image
+            //let cellHeight = photoCell.frame.width/image.size.width * image.size.height
+            let smallImage = imageWithImage(image, scaledToWidth: 600)
+            self.image = smallImage
         }
         self.dismissViewControllerAnimated(true, completion: {})
     }
@@ -166,4 +188,7 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         
     }
+    
+    // MARK: - AlertView
+
 }

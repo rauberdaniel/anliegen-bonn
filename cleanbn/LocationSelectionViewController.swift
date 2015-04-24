@@ -38,6 +38,10 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
         panRecognizer.minimumNumberOfTouches = 1
         mapView.addGestureRecognizer(panRecognizer)
         
+        let pinchRecognizer = UIPinchGestureRecognizer(target: self, action: "didPan:")
+        pinchRecognizer.delegate = self
+        mapView.addGestureRecognizer(pinchRecognizer)
+        
         locationManager.delegate = self
         locationManager.requestWhenInUseAuthorization()
     }
@@ -49,10 +53,10 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
     }
     
     func setupView() {
-        continueButton.layer.cornerRadius = 6
+        continueButton.layer.cornerRadius = 5
         continueButton.clipsToBounds = true
         continueButton.layer.borderWidth = 0.5
-        continueButton.layer.borderColor = UIColor(white: 0.8, alpha: 1).CGColor
+        continueButton.layer.borderColor = UIColor(white: 0.2, alpha: 0.4).CGColor
         
         streetView.layer.cornerRadius = continueButton.layer.cornerRadius
         streetView.clipsToBounds = true
@@ -60,14 +64,14 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
         streetView.layer.borderColor = continueButton.layer.borderColor
     }
     
-    func didPan(sender: UIPanGestureRecognizer) {
+    func didPan(sender: UIGestureRecognizer) {
         if sender.state == UIGestureRecognizerState.Began {
             dragging = true
             updateLocationName()
         }
         if sender.state == UIGestureRecognizerState.Ended {
             dragging = false
-            let coord = mapView.convertPoint(CGPointMake(mapView.frame.width/2, mapView.frame.height/2), toCoordinateFromView: mapView)
+            let coord = mapView.convertPoint(CGPointMake(mapView.frame.width/2, mapView.frame.height/2+32), toCoordinateFromView: mapView)
             location = CLLocation(latitude: coord.latitude, longitude: coord.longitude)
         }
     }
@@ -153,7 +157,6 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
             let span = MKCoordinateSpanMake(0.007, 0.007)
             let region: MKCoordinateRegion = MKCoordinateRegionMake(coordinate, span)
             mapView.setRegion(region, animated: animateAutoLocation)
-            mapView.setCenterCoordinate(coordinate, animated: animateAutoLocation)
             animateAutoLocation = false
         }
     }
@@ -164,6 +167,7 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
         if segue.identifier == "nextStep" {
             if let dest = segue.destinationViewController as? AddViewController {
                 dest.location = location
+                dest.locationName = streetLabel.text
             }
         }
     }

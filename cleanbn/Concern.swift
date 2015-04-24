@@ -9,11 +9,12 @@
 import Foundation
 import CoreLocation
 import UIKit
+import CoreGraphics
 
 class Concern: NSObject, CLLocationManagerDelegate {
     
     var dateReported: NSDate
-    var locationName: String = "Unknown Location"
+    var locationName: String?
     var location: CLLocation? {
         didSet {
             //updateLocationName()
@@ -23,6 +24,7 @@ class Concern: NSObject, CLLocationManagerDelegate {
     var service: Service
     var imageUrl: String?
     var state: String?
+    var image: UIImage?
     
     override init() {
         dateReported = NSDate()
@@ -71,11 +73,19 @@ class Concern: NSObject, CLLocationManagerDelegate {
     }
     
     func getJSONData() -> NSData? {
-        let dict: NSMutableDictionary = NSMutableDictionary()
-        dict.setValue(service.name, forKey: "service_name")
-        dict.setValue(service.code, forKey: "service_code")
-        dict.setValue(location?.coordinate.latitude, forKey: "lat")
-        dict.setValue(location?.coordinate.longitude, forKey: "long")
+        
+        var dict: Dictionary<String, AnyObject> = [:]
+        dict["service_name"] = service.name
+        dict["service_code"] = service.code
+        dict["lat"] = location?.coordinate.latitude
+        dict["long"] = location?.coordinate.longitude
+        dict["address"] = locationName
+        
+        if let image = image {
+            let imageData = UIImageJPEGRepresentation(image, 0.6)
+            let base64ImageString = imageData.base64EncodedStringWithOptions(.allZeros)
+            dict["image"] = base64ImageString
+        }
         
         var parseError: NSError?
         let data = NSJSONSerialization.dataWithJSONObject(dict, options: NSJSONWritingOptions.allZeros, error: &parseError)
