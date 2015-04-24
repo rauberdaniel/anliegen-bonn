@@ -19,20 +19,23 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
     @IBOutlet weak var streetView: UIView!
     
     let locationManager = CLLocationManager()
+    let geocoder = CLGeocoder()
     var customLocation = false
     var location: CLLocation? {
         didSet {
             updateLocationName()
         }
     }
+    var userLocation: CLLocation?
     var dragging: Bool = false
-    var animateAutoLocation: Bool = false
+    var animateToNewLocation: Bool = false
     
     override func viewDidLoad() {
         setupView()
         
         mapView.delegate = self
         
+        // Add Gesture Recognizers
         let panRecognizer = UIPanGestureRecognizer(target: self, action: "didPan:")
         panRecognizer.delegate = self
         panRecognizer.minimumNumberOfTouches = 1
@@ -44,12 +47,16 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
         
         locationManager.delegate = self
         locationManager.requestWhenInUseAuthorization()
-    }
-    
-    override func viewDidAppear(animated: Bool) {
-        if location == nil {
-            determineLocation()
+        
+        streetLabel.text = "Searching…"
+        
+        if location != nil {
+            // location is already set
+            customLocation = true
+        } else {
+            customLocation = false
         }
+        startMonitoringLocation()
     }
     
     func setupView() {
@@ -65,6 +72,7 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
     }
     
     func didPan(sender: UIGestureRecognizer) {
+        customLocation = true
         if sender.state == UIGestureRecognizerState.Began {
             dragging = true
             updateLocationName()
@@ -80,8 +88,6 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
         if dragging {
             streetLabel.text = "Searching…"
         } else {
-            streetLabel.text = "Searching…"
-            let geocoder = CLGeocoder()
             geocoder.reverseGeocodeLocation(location, completionHandler: { (placemarks, error) -> Void in
                 if error != nil {
                     return
@@ -116,11 +122,13 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
     }
     
     func locationManager(manager: CLLocationManager!, didUpdateLocations locations: [AnyObject]!) {
-        if !customLocation {
-            if let newLocation = locations[0] as? CLLocation {
-                location = newLocation
-                locationUpdatedAutomatically()
-                manager.stopUpdatingLocation()
+        if let newLocation = locations[0] as? CLLocation {
+            userLocation = newLocation
+            
+            if !customLocation {
+                // following user location
+                location = userLocation
+                moveToLocation(newLocation)
             }
         }
     }
@@ -128,37 +136,39 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
     // MARK: - MapViewDelegate
     
     func mapView(mapView: MKMapView!, regionWillChangeAnimated animated: Bool) {
+        // lift the blob
         UIView.animateWithDuration(0.2, delay: 0, options: UIViewAnimationOptions.BeginFromCurrentState, animations: { () -> Void in
             self.locationMarker.transform = CGAffineTransformMakeScale(1.2, 1.2)
         }, completion: nil)
     }
     
     func mapView(mapView: MKMapView!, regionDidChangeAnimated animated: Bool) {
+        // lower the blob
         UIView.animateWithDuration(0.2, delay: 0, options: UIViewAnimationOptions.BeginFromCurrentState, animations: { () -> Void in
             self.locationMarker.transform = CGAffineTransformIdentity
         }, completion: nil)
     }
     
     // MARK: - Map Controller
-    
 
     @IBAction func locateUser(sender: UIButton) {
-        animateAutoLocation = true
-        determineLocation()
+        customLocation = false
+        location = userLocation
+        if let location = location {
+            moveToLocation(location)
+        }
     }
     
-    func determineLocation() {
+    func startMonitoringLocation() {
         locationManager.desiredAccuracy = 10.0
         locationManager.startUpdatingLocation()
     }
     
-    func locationUpdatedAutomatically() {
-        if let coordinate = location?.coordinate {
-            let span = MKCoordinateSpanMake(0.007, 0.007)
-            let region: MKCoordinateRegion = MKCoordinateRegionMake(coordinate, span)
-            mapView.setRegion(region, animated: animateAutoLocation)
-            animateAutoLocation = false
-        }
+    func moveToLocation(location: CLLocation) {
+        let span = MKCoordinateSpanMake(0.007, 0.007)
+        let region: MKCoordinateRegion = MKCoordinateRegionMake(location.coordinate, span)
+        mapView.setRegion(region, animated: animateToNewLocation)
+        animateToNewLocation = true
     }
     
     // MARK: - Seagues

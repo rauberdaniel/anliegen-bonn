@@ -38,7 +38,6 @@ class ApiHandler: NSObject {
     }
     
     func submitConcern(concern: Concern, completionHandler: (response: NSURLResponse!, data: NSData!, error: NSError!) -> Void) {
-        //let url = NSURL(string: "http://eagle.local:3393")
         let url = NSURL(string: "http://cleanbn.danielrauber.de/submit.php")
         
         let data = concern.getJSONData()

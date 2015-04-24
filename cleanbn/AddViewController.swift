@@ -88,8 +88,11 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
             
         } else {
             // no service specified
-            let alert = UIAlertView(title: "No Service specified", message: "Please specify a service to submit your concern.", delegate: nil, cancelButtonTitle: "Ok")
-            alert.show()
+            let alert = UIAlertController(title: "No Service specified", message: "Please specify a service to submit your concern.", preferredStyle: UIAlertControllerStyle.Alert)
+            let closeAction = UIAlertAction(title: "Ok", style: UIAlertActionStyle.Cancel, handler: { (action) -> Void in
+                self.dismissViewControllerAnimated(true, completion: nil)
+            })
+            alert.addAction(closeAction)
         }
     }
     
