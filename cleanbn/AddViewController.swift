@@ -47,7 +47,15 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
         locationManager.requestWhenInUseAuthorization()
         
         mapView.delegate = self
+        updateLocationName()
         updateMap()
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        updateMap()
+        if let indexPath = tableView.indexPathForSelectedRow() {
+            tableView.deselectRowAtIndexPath(indexPath, animated: true)
+        }
     }
     
     // MARK: - Submission
@@ -81,11 +89,10 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
             let span = MKCoordinateSpanMake(0.004, 0.004)
             let region = MKCoordinateRegionMake(coord, span)
             if let mapView = mapView {
-                mapView.setRegion(region, animated: true)
+                mapView.setRegion(region, animated: false)
                 mapView.addAnnotation(customLocationAnnotation)
             }
             customLocationAnnotation.coordinate = coord
-            updateLocationName()
         }
     }
     

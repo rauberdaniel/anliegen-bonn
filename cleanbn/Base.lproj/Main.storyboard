@@ -22,11 +22,12 @@
                             </mapView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RzF-Rd-cJ8">
                                 <rect key="frame" x="16" y="536" width="568" height="44"/>
-                                <color key="backgroundColor" red="0.99989169836044312" green="1" blue="0.99988096952438354" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <color key="backgroundColor" red="0.80526703596115112" green="0.028064688667654991" blue="0.10187920182943344" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="44" id="vEs-k5-t1h"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="18"/>
+                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="18"/>
+                                <color key="tintColor" red="0.99989169836044312" green="1" blue="0.99988096952438354" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <state key="normal" title="Select Location">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
@@ -41,6 +42,42 @@
                                     <constraint firstAttribute="width" constant="30" id="dWr-37-DI4"/>
                                 </constraints>
                             </imageView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="NcJ-yp-cke">
+                                <rect key="frame" x="16" y="484" width="568" height="44"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Street" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3OF-JQ-6sZ">
+                                        <rect key="frame" x="52" y="8" width="508" height="28"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9Sh-mQ-qqa">
+                                        <rect key="frame" x="0.0" y="0.0" width="44" height="44"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="44" id="zCo-hj-vxD"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                        <state key="normal" image="UserLocate">
+                                            <color key="titleColor" red="0.80526703596115112" green="0.028064688667654991" blue="0.10187920182943344" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="locateUser:" destination="f63-Cz-FiV" eventType="touchUpInside" id="32e-zX-vOE"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstItem="9Sh-mQ-qqa" firstAttribute="top" secondItem="NcJ-yp-cke" secondAttribute="top" id="3ft-3g-ura"/>
+                                    <constraint firstAttribute="bottom" secondItem="3OF-JQ-6sZ" secondAttribute="bottom" constant="8" id="4c7-LP-4kp"/>
+                                    <constraint firstItem="9Sh-mQ-qqa" firstAttribute="leading" secondItem="NcJ-yp-cke" secondAttribute="leading" id="DFb-Q4-LAk"/>
+                                    <constraint firstAttribute="trailing" secondItem="3OF-JQ-6sZ" secondAttribute="trailing" constant="8" id="HcP-AF-SLi"/>
+                                    <constraint firstItem="3OF-JQ-6sZ" firstAttribute="top" secondItem="NcJ-yp-cke" secondAttribute="top" constant="8" id="Jqo-XF-S6I"/>
+                                    <constraint firstAttribute="height" constant="44" id="KxO-8T-rvm"/>
+                                    <constraint firstItem="3OF-JQ-6sZ" firstAttribute="leading" secondItem="9Sh-mQ-qqa" secondAttribute="trailing" constant="8" id="bjw-Y6-ZeS"/>
+                                    <constraint firstAttribute="bottom" secondItem="9Sh-mQ-qqa" secondAttribute="bottom" id="zDK-P9-RWX"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
@@ -49,8 +86,11 @@
                             <constraint firstAttribute="trailing" secondItem="yCV-iM-vuY" secondAttribute="trailing" id="6yB-Sv-rQX"/>
                             <constraint firstItem="RzF-Rd-cJ8" firstAttribute="trailing" secondItem="WEl-Vn-b0O" secondAttribute="trailingMargin" id="Nut-NU-WfE"/>
                             <constraint firstItem="yCV-iM-vuY" firstAttribute="centerY" secondItem="H19-2W-gI8" secondAttribute="centerY" id="X6r-ki-h2N"/>
+                            <constraint firstItem="NcJ-yp-cke" firstAttribute="trailing" secondItem="WEl-Vn-b0O" secondAttribute="trailingMargin" id="Yj1-oM-9fN"/>
                             <constraint firstItem="yCV-iM-vuY" firstAttribute="leading" secondItem="WEl-Vn-b0O" secondAttribute="leading" id="ZMu-Xl-6ca"/>
+                            <constraint firstItem="RzF-Rd-cJ8" firstAttribute="top" secondItem="NcJ-yp-cke" secondAttribute="bottom" constant="8" id="bAK-df-nnU"/>
                             <constraint firstItem="RzF-Rd-cJ8" firstAttribute="leading" secondItem="WEl-Vn-b0O" secondAttribute="leadingMargin" id="gZo-NO-GEB"/>
+                            <constraint firstItem="NcJ-yp-cke" firstAttribute="leading" secondItem="WEl-Vn-b0O" secondAttribute="leadingMargin" id="iKY-RQ-XEN"/>
                             <constraint firstItem="sxF-k4-Px7" firstAttribute="top" secondItem="yCV-iM-vuY" secondAttribute="bottom" id="pTt-O5-5jH"/>
                             <constraint firstItem="yCV-iM-vuY" firstAttribute="top" secondItem="WEl-Vn-b0O" secondAttribute="top" id="qYL-R2-aWw"/>
                         </constraints>
@@ -60,6 +100,9 @@
                         <outlet property="continueButton" destination="RzF-Rd-cJ8" id="QeC-53-TQk"/>
                         <outlet property="locationMarker" destination="H19-2W-gI8" id="UNG-0S-OpF"/>
                         <outlet property="mapView" destination="yCV-iM-vuY" id="nY4-15-aTQ"/>
+                        <outlet property="streetLabel" destination="3OF-JQ-6sZ" id="K1h-dE-ufq"/>
+                        <outlet property="streetView" destination="NcJ-yp-cke" id="dsN-Ds-VLS"/>
+                        <outlet property="userLocationButton" destination="9Sh-mQ-qqa" id="fF7-Oi-3u9"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="MNT-c6-aAf" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -258,6 +301,7 @@
     </scenes>
     <resources>
         <image name="LocationMarker" width="30" height="30"/>
+        <image name="UserLocate" width="30" height="30"/>
     </resources>
     <color key="tintColor" red="0.80526703596115112" green="0.028064688667654991" blue="0.10187920182943344" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
 </document>
