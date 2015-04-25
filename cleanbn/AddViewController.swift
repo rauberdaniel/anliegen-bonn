@@ -100,15 +100,6 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
         self.parentViewController?.dismissViewControllerAnimated(true, completion: {})
     }
     
-    func imageWithImage(image: UIImage, scaledToWidth width: CGFloat) -> UIImage {
-        let aspectRatio = image.size.height/image.size.width
-        UIGraphicsBeginImageContextWithOptions(CGSizeMake(width, width*aspectRatio), false, 1.0)
-        image.drawInRect(CGRectMake(0, 0, width, width*aspectRatio))
-        let newImage = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        return newImage
-    }
-    
     func updateMap() {
         if let coord = location?.coordinate {
             let span = MKCoordinateSpanMake(0.004, 0.004)
@@ -168,7 +159,7 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
             imageView.frame = CGRectMake(0, 0, photoCell.frame.width, photoCell.frame.height)
             photoCell.addSubview(imageView)
             //let cellHeight = photoCell.frame.width/image.size.width * image.size.height
-            let smallImage = imageWithImage(image, scaledToWidth: 600)
+            let smallImage = imageWithImage(image, scaledToMaxSize: CGSizeMake(2048, 2048))
             self.image = smallImage
         }
         self.dismissViewControllerAnimated(true, completion: {})
@@ -184,6 +175,27 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
             
             self.presentViewController(imagePicker, animated: true, completion: {})
         }
+    }
+    
+    func imageWithImage(image: UIImage, scaledToMaxSize maxSize: CGSize) -> UIImage {
+        let targetAspectRatio = maxSize.height/maxSize.width
+        let imageAspectRatio = image.size.height/image.size.width
+        var width: CGFloat = maxSize.width
+        var height: CGFloat = maxSize.height
+        if imageAspectRatio > targetAspectRatio {
+            // set height to 2048, width auto
+            height = min(maxSize.height, image.size.height)
+            width = height/image.size.height * image.size.width
+        } else {
+            // set width to 2048, height auto
+            width = min(maxSize.width, image.size.width)
+            height = width/image.size.width * image.size.height
+        }
+        UIGraphicsBeginImageContextWithOptions(CGSizeMake(width, height), false, 1.0)
+        image.drawInRect(CGRectMake(0, 0, width, height))
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return newImage
     }
     
     // MARK: - TableView

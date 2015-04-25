@@ -28,7 +28,7 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
     }
     var userLocation: CLLocation?
     var dragging: Bool = false
-    var animateToNewLocation: Bool = false
+    var animateToNewLocation: Bool = false // initially false, true after first location
     
     override func viewDidLoad() {
         setupView()
@@ -49,6 +49,7 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
         locationManager.requestWhenInUseAuthorization()
         
         streetLabel.text = "Searching…"
+        userLocationButton.selected = true
         
         if location != nil {
             // location is already set
@@ -73,14 +74,13 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
     
     func didPan(sender: UIGestureRecognizer) {
         customLocation = true
+        userLocationButton.selected = false
         if sender.state == UIGestureRecognizerState.Began {
             dragging = true
             updateLocationName()
         }
         if sender.state == UIGestureRecognizerState.Ended {
-            dragging = false
-            let coord = mapView.convertPoint(CGPointMake(mapView.frame.width/2, mapView.frame.height/2+32), toCoordinateFromView: mapView)
-            location = CLLocation(latitude: coord.latitude, longitude: coord.longitude)
+            // dragging will end when map region has finished changing
         }
     }
     
@@ -139,19 +139,25 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
         // lift the blob
         UIView.animateWithDuration(0.2, delay: 0, options: UIViewAnimationOptions.BeginFromCurrentState, animations: { () -> Void in
             self.locationMarker.transform = CGAffineTransformMakeScale(1.2, 1.2)
-        }, completion: nil)
+            }, completion: nil)
     }
     
     func mapView(mapView: MKMapView!, regionDidChangeAnimated animated: Bool) {
+        if dragging {
+            dragging = false
+            let coord = mapView.convertPoint(CGPointMake(mapView.frame.width/2, mapView.frame.height/2+32), toCoordinateFromView: mapView)
+            location = CLLocation(latitude: coord.latitude, longitude: coord.longitude)
+        }
         // lower the blob
         UIView.animateWithDuration(0.2, delay: 0, options: UIViewAnimationOptions.BeginFromCurrentState, animations: { () -> Void in
             self.locationMarker.transform = CGAffineTransformIdentity
-        }, completion: nil)
+            }, completion: nil)
     }
     
     // MARK: - Map Controller
-
+    
     @IBAction func locateUser(sender: UIButton) {
+        sender.selected = true
         customLocation = false
         location = userLocation
         if let location = location {
