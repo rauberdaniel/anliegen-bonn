@@ -16,7 +16,7 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
     @IBOutlet weak var locationMarker: UIImageView!
     @IBOutlet weak var userLocationButton: UIButton!
     @IBOutlet weak var streetLabel: UILabel!
-    @IBOutlet weak var streetView: UIView!
+    @IBOutlet weak var streetView: UIVisualEffectView!
     
     let locationManager = CLLocationManager()
     let geocoder = CLGeocoder()
