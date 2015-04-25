@@ -127,8 +127,11 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
             
             if !customLocation {
                 // following user location
-                location = userLocation
-                moveToLocation(newLocation)
+                if location == nil || userLocation?.distanceFromLocation(location) > 5 {
+                    // only update location if it has changed at least 5 meters
+                    location = userLocation
+                    moveToLocation(newLocation)
+                }
             }
         }
     }

@@ -43,13 +43,13 @@
                                 </constraints>
                             </imageView>
                             <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="eVh-U8-3oh">
-                                <rect key="frame" x="16" y="478" width="568" height="50"/>
+                                <rect key="frame" x="16" y="484" width="568" height="44"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="60a-NH-t8k">
-                                    <rect key="frame" x="0.0" y="0.0" width="568" height="50"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="568" height="44"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9Sh-mQ-qqa">
-                                            <rect key="frame" x="0.0" y="3" width="44" height="44"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="44" height="44"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="44" id="T3r-sm-3wc"/>
                                                 <constraint firstAttribute="width" constant="44" id="zCo-hj-vxD"/>
@@ -64,7 +64,7 @@
                                             </connections>
                                         </button>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Street" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3OF-JQ-6sZ">
-                                            <rect key="frame" x="52" y="3" width="508" height="44"/>
+                                            <rect key="frame" x="52" y="0.0" width="508" height="44"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="44" id="wEs-BX-2eQ"/>
                                             </constraints>
@@ -82,7 +82,7 @@
                                     </constraints>
                                 </view>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="50" id="Mlu-bC-eyv"/>
+                                    <constraint firstAttribute="height" constant="44" id="Mlu-bC-eyv"/>
                                 </constraints>
                                 <blurEffect style="extraLight"/>
                             </visualEffectView>
