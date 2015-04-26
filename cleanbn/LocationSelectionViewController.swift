@@ -27,7 +27,7 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
         }
     }
     var userLocation: CLLocation?
-    var dragging: Bool = false
+    var dragging = 0
     var animateToNewLocation: Bool = false // initially false, true after first location
     
     override func viewDidLoad() {
@@ -44,6 +44,10 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
         let pinchRecognizer = UIPinchGestureRecognizer(target: self, action: "didPan:")
         pinchRecognizer.delegate = self
         mapView.addGestureRecognizer(pinchRecognizer)
+        
+        let tapRecognizer = UITapGestureRecognizer(target: self, action: "didPan:")
+        tapRecognizer.numberOfTapsRequired = 2
+        mapView.addGestureRecognizer(tapRecognizer)
         
         locationManager.delegate = self
         locationManager.requestWhenInUseAuthorization()
@@ -76,31 +80,23 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
         customLocation = true
         userLocationButton.selected = false
         if sender.state == UIGestureRecognizerState.Began {
-            dragging = true
-            updateLocationName()
+            //updateLocationName()
         }
         if sender.state == UIGestureRecognizerState.Ended {
-            // dragging will end when map region has finished changing
+            //updateLocationName()
         }
     }
     
     func updateLocationName() {
-        if dragging {
+        if dragging > 0 {
             streetLabel.text = "Searching…"
         } else {
             geocoder.reverseGeocodeLocation(location, completionHandler: { (placemarks, error) -> Void in
-                if error != nil {
+                if (self.dragging > 0 || error != nil || placemarks.count == 0) {
                     return
                 }
                 if let placemark = placemarks[0] as? CLPlacemark {
-                    var street = "Unknown Street"
-                    if placemark.thoroughfare != nil {
-                        street = "\(placemark.thoroughfare)"
-                        
-                        if placemark.subThoroughfare != nil {
-                            street += " \(placemark.subThoroughfare)"
-                        }
-                    }
+                    let street = AddressManager.sharedManager.getAddressStringFromPlacemark(placemark, includeLocality: false)
                     self.streetLabel.text = street
                 }
             })
@@ -129,7 +125,6 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
                 // following user location
                 if location == nil || userLocation?.distanceFromLocation(location) > 5 {
                     // only update location if it has changed at least 5 meters
-                    location = userLocation
                     moveToLocation(newLocation)
                 }
             }
@@ -139,6 +134,8 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
     // MARK: - MapViewDelegate
     
     func mapView(mapView: MKMapView!, regionWillChangeAnimated animated: Bool) {
+        dragging++
+        updateLocationName()
         // lift the blob
         UIView.animateWithDuration(0.2, delay: 0, options: UIViewAnimationOptions.BeginFromCurrentState, animations: { () -> Void in
             self.locationMarker.transform = CGAffineTransformMakeScale(1.2, 1.2)
@@ -146,11 +143,9 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
     }
     
     func mapView(mapView: MKMapView!, regionDidChangeAnimated animated: Bool) {
-        if dragging {
-            dragging = false
-            let coord = mapView.convertPoint(CGPointMake(mapView.frame.width/2, mapView.frame.height/2+32), toCoordinateFromView: mapView)
-            location = CLLocation(latitude: coord.latitude, longitude: coord.longitude)
-        }
+        dragging--
+        let coord = mapView.convertPoint(CGPointMake(mapView.frame.width/2, mapView.frame.height/2+32), toCoordinateFromView: mapView)
+        location = CLLocation(latitude: coord.latitude, longitude: coord.longitude)
         // lower the blob
         UIView.animateWithDuration(0.2, delay: 0, options: UIViewAnimationOptions.BeginFromCurrentState, animations: { () -> Void in
             self.locationMarker.transform = CGAffineTransformIdentity

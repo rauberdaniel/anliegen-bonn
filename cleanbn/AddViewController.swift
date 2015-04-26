@@ -30,6 +30,13 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
     var image: UIImage?
     let customLocationAnnotation = MKPointAnnotation()
     var locationName: String?
+    var placemark: CLPlacemark? {
+        didSet {
+            updateLocationName()
+        }
+    }
+    
+    // MARK: - Setup
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -49,7 +56,7 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
         locationManager.requestWhenInUseAuthorization()
         
         mapView.delegate = self
-        updateLocationName()
+        updatePlacemark()
         updateMap()
     }
     
@@ -68,7 +75,7 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
             let concern = Concern()
             concern.service = service
             concern.location = location
-            concern.locationName = locationName
+            concern.locationName = AddressManager.sharedManager.getAddressStringFromPlacemark(placemark, includeLocality: true)
             concern.image = image
             ApiHandler.sharedHandler.submitConcern(concern, completionHandler: { (response, data, error) -> Void in
                 let res = NSString(data: data, encoding: NSUTF8StringEncoding)
@@ -100,6 +107,8 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
         self.parentViewController?.dismissViewControllerAnimated(true, completion: {})
     }
     
+    // MARK: - Location Management
+    
     func updateMap() {
         if let coord = location?.coordinate {
             let span = MKCoordinateSpanMake(0.004, 0.004)
@@ -112,6 +121,23 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
         }
     }
     
+    func updatePlacemark() {
+        let geocoder = CLGeocoder()
+        geocoder.reverseGeocodeLocation(location, completionHandler: { (placemarks, error) -> Void in
+            if let placemark = placemarks[0] as? CLPlacemark {
+                self.placemark = placemark
+            }
+        })
+    }
+    
+    func updateLocationName() {
+        let street = AddressManager.sharedManager.getAddressStringFromPlacemark(placemark, includeLocality: false)
+        self.streetCell.textLabel?.text = street
+        self.streetCell.setNeedsLayout()
+    }
+    
+    // MARK: - Service Management
+    
     func updateService() {
         if let service = service {
             serviceCell.detailTextLabel?.text = service.name
@@ -122,23 +148,7 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
         }
     }
     
-    func updateLocationName() {
-        let geocoder = CLGeocoder()
-        geocoder.reverseGeocodeLocation(location, completionHandler: { (placemarks, error) -> Void in
-            if let placemark = placemarks[0] as? CLPlacemark {
-                var street = "Unknown Street"
-                if placemark.thoroughfare != nil {
-                    street = "\(placemark.thoroughfare)"
-                    
-                    if placemark.subThoroughfare != nil {
-                        street += " \(placemark.subThoroughfare)"
-                    }
-                }
-                self.streetCell.textLabel?.text = street
-                self.streetCell.setNeedsLayout()
-            }
-        })
-    }
+    // MARK: - Segues
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "setService" {
@@ -150,8 +160,6 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
     
     func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [NSObject : AnyObject]) {
         if let image = info[NSString(string: "UIImagePickerControllerOriginalImage")] as? UIImage {
-            // TODO: Resize Image
-            // TODO: Display Image
             photoButton.removeFromSuperview()
             let imageView = UIImageView(image: image)
             imageView.clipsToBounds = true
@@ -203,7 +211,5 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         
     }
-    
-    // MARK: - AlertView
 
 }

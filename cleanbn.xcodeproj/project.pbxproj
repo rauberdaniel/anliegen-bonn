@@ -13,6 +13,7 @@
 		656840201AE2F326008A8D31 /* ApiHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6568401F1AE2F326008A8D31 /* ApiHandler.swift */; };
 		656840231AE3067C008A8D31 /* AddViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 656840211AE3067C008A8D31 /* AddViewController.swift */; };
 		656840241AE3067C008A8D31 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 656840221AE3067C008A8D31 /* AppDelegate.swift */; };
+		658CB5051AECE91A00C6077E /* AddressManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 658CB5041AECE91A00C6077E /* AddressManager.swift */; };
 		658F190E1AE0E66B007DB575 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 658F190C1AE0E66B007DB575 /* Main.storyboard */; };
 		658F19101AE0E66B007DB575 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 658F190F1AE0E66B007DB575 /* Images.xcassets */; };
 		658F19131AE0E66B007DB575 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 658F19111AE0E66B007DB575 /* LaunchScreen.xib */; };
@@ -41,6 +42,7 @@
 		6568401F1AE2F326008A8D31 /* ApiHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApiHandler.swift; sourceTree = "<group>"; };
 		656840211AE3067C008A8D31 /* AddViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddViewController.swift; sourceTree = "<group>"; };
 		656840221AE3067C008A8D31 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		658CB5041AECE91A00C6077E /* AddressManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddressManager.swift; sourceTree = "<group>"; };
 		658F19011AE0E66B007DB575 /* cleanbn.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = cleanbn.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		658F19051AE0E66B007DB575 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		658F190D1AE0E66B007DB575 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -85,6 +87,14 @@
 			name = Services;
 			sourceTree = "<group>";
 		};
+		658CB5061AECE92000C6077E /* Addresses */ = {
+			isa = PBXGroup;
+			children = (
+				658CB5041AECE91A00C6077E /* AddressManager.swift */,
+			);
+			name = Addresses;
+			sourceTree = "<group>";
+		};
 		658F18F81AE0E66B007DB575 = {
 			isa = PBXGroup;
 			children = (
@@ -108,6 +118,7 @@
 		658F19031AE0E66B007DB575 /* cleanbn */ = {
 			isa = PBXGroup;
 			children = (
+				658CB5061AECE92000C6077E /* Addresses */,
 				654536431AE2C8BB007C0A1E /* Services */,
 				658F190C1AE0E66B007DB575 /* Main.storyboard */,
 				658F190F1AE0E66B007DB575 /* Images.xcassets */,
@@ -254,6 +265,7 @@
 				654536421AE2BB9C007C0A1E /* ConcernTypeViewController.swift in Sources */,
 				656840231AE3067C008A8D31 /* AddViewController.swift in Sources */,
 				65E5B2D51AE137BF00DD4042 /* NSDateISO8601.swift in Sources */,
+				658CB5051AECE91A00C6077E /* AddressManager.swift in Sources */,
 				654536451AE2C8D4007C0A1E /* ServiceManager.swift in Sources */,
 				654536471AE2C9C8007C0A1E /* Service.swift in Sources */,
 				656840201AE2F326008A8D31 /* ApiHandler.swift in Sources */,
