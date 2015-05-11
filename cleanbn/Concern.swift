@@ -13,7 +13,7 @@ import CoreGraphics
 
 class Concern: NSObject, CLLocationManagerDelegate {
     
-    var dateReported: NSDate
+    var dateReported: NSDate?
     var locationName: String?
     var location: CLLocation? {
         didSet {
@@ -27,7 +27,6 @@ class Concern: NSObject, CLLocationManagerDelegate {
     var image: UIImage?
     
     override init() {
-        dateReported = NSDate()
         service = Service(code: "0000", name: "Undefined")
     }
     
@@ -61,6 +60,16 @@ class Concern: NSObject, CLLocationManagerDelegate {
         if let state = dict["status"] as? String {
             self.state = state
         }
+    }
+    
+    init(service: Service, location: CLLocation, address: String, description: String?, image: UIImage?){
+        self.service = service
+        self.location = location
+        self.locationName = address
+        if let description = description {
+            self.desc = description
+        }
+        self.image = image
     }
     
     func updateLocationName() {

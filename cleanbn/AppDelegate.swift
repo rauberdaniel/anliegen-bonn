@@ -16,6 +16,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
+        
+        let userDefaults: [NSObject : AnyObject] = [
+            "email": "",
+            "termsAccepted": false
+        ]
+        NSUserDefaults.standardUserDefaults().registerDefaults(userDefaults)
+        ServiceManager.sharedManager
+        
         return true
     }
 

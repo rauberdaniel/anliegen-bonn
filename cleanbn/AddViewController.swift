@@ -37,7 +37,7 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
     }
     
     // MARK: - Setup
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do view setup here.
@@ -72,25 +72,27 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
     func sendConcern(sender: AnyObject) {
         sendButton.enabled = false
         if let service: Service = service, location = location {
-            let concern = Concern()
-            concern.service = service
-            concern.location = location
-            concern.locationName = AddressManager.sharedManager.getAddressStringFromPlacemark(placemark, includeLocality: true)
-            concern.image = image
+            let locationName = AddressManager.sharedManager.getAddressStringFromPlacemark(placemark, includeLocality: true)
+            let concern = Concern(service: service, location: location, address: locationName, description: nil, image: image)
+            
             ApiHandler.sharedHandler.submitConcern(concern, completionHandler: { (response, data, error) -> Void in
-                let res = NSString(data: data, encoding: NSUTF8StringEncoding)
-                if error == nil {
-                    //self.parentViewController?.dismissViewControllerAnimated(true, completion: {})
-                    let alert = UIAlertController(title: "Concern sent", message: "Your concern has been successfully transmitted", preferredStyle: UIAlertControllerStyle.Alert)
-                    let action = UIAlertAction(title: "Ok", style: UIAlertActionStyle.Default, handler: { (action) -> Void in
+                if error != nil {
+                    self.sendButton.enabled = true
+                    let alert = UIAlertController(title: "Error", message: "Your concern could not be sent! Please enable network access to send your concern.", preferredStyle: .Alert)
+                    let action = UIAlertAction(title: "Ok", style: .Cancel, handler: { (action) -> Void in
                         self.dismissViewControllerAnimated(true, completion: nil)
-                        self.navigationController?.popViewControllerAnimated(true)
                     })
                     alert.addAction(action)
                     self.presentViewController(alert, animated: true, completion: nil)
-                } else {
-                    self.sendButton.enabled = true
+                    return
                 }
+                let alert = UIAlertController(title: "Concern sent", message: "Your concern has been successfully transmitted", preferredStyle: UIAlertControllerStyle.Alert)
+                let action = UIAlertAction(title: "Ok", style: UIAlertActionStyle.Cancel, handler: { (action) -> Void in
+                    self.dismissViewControllerAnimated(true, completion: nil)
+                    self.navigationController?.popViewControllerAnimated(true)
+                })
+                alert.addAction(action)
+                self.presentViewController(alert, animated: true, completion: nil)
             })
             
         } else {
@@ -124,8 +126,10 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
     func updatePlacemark() {
         let geocoder = CLGeocoder()
         geocoder.reverseGeocodeLocation(location, completionHandler: { (placemarks, error) -> Void in
-            if let placemark = placemarks[0] as? CLPlacemark {
-                self.placemark = placemark
+            if error == nil {
+                if let placemark = placemarks[0] as? CLPlacemark {
+                    self.placemark = placemark
+                }
             }
         })
     }
@@ -211,5 +215,5 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         
     }
-
+    
 }

@@ -8,7 +8,7 @@
 
 import Foundation
 
-class Service: NSObject {
+class Service: NSObject, NSCoding {
 
     let code: String
     let name: String
@@ -16,6 +16,21 @@ class Service: NSObject {
     init(code: String, name: String) {
         self.code = code
         self.name = name
+    }
+    
+    required init(coder aDecoder: NSCoder) {
+        let dict = aDecoder.decodeObjectForKey("service") as! [String:String]
+        self.code = dict["code"]!
+        self.name = dict["name"]!
+    }
+    
+    override var description: String {
+        return "Service (\(code) | \(name))"
+    }
+    
+    func encodeWithCoder(aCoder: NSCoder) {
+        aCoder.encodeObject(["code":code,"name":name], forKey: "service")
+        
     }
     
 }

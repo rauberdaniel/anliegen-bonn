@@ -15,9 +15,16 @@ class ServiceManager: NSObject {
         return _ServiceManagerInstance
     }
     
-    private(set) var services: [Service] = []
+    var services: [Service] {
+        get {
+            return getServices()
+        }
+    }
     
     override init() {
+        super.init()
+        
+        /*
         let types: [[String: String]] = [
             ["id":"0001", "name":"Ampel defekt"],
             ["id":"0002", "name":"Glassplitter"],
@@ -31,6 +38,27 @@ class ServiceManager: NSObject {
             if let name = type["name"], id = type["id"] {
                 services.append(Service(code: id, name: name))
             }
+        }
+        */
+        
+        updateServices()
+    }
+    
+    func getServices() -> [Service] {
+        if let data = NSUserDefaults.standardUserDefaults().objectForKey("services") as? NSData {
+            if let services = NSKeyedUnarchiver.unarchiveObjectWithData(data) as? [Service] {
+                return services
+            }
+        }
+        return []
+    }
+    
+    func updateServices() {
+        println("updateServices");
+        ApiHandler.sharedHandler.getServices { (services) -> Void in
+            let data = NSKeyedArchiver.archivedDataWithRootObject(services)
+            NSUserDefaults.standardUserDefaults().setObject(data, forKey: "services")
+            println("ServiceManager :: Services updated")
         }
     }
 }

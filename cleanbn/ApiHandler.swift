@@ -15,16 +15,44 @@ class ApiHandler: NSObject {
         return _ApiHandlerInstance
     }
     
+    func getServices(completionHandler: ([Service]) -> Void) {
+        let url = NSURL(string: "http://anliegen.bonn.de/georeport/v2/services.json")
+        let request = NSURLRequest(URL: url!, cachePolicy: NSURLRequestCachePolicy.ReloadIgnoringLocalCacheData, timeoutInterval: 10)
+        NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue(), completionHandler: { (response, data, error) -> Void in
+            if error == nil {
+                let services = self.parseServices(data)
+                completionHandler(services)
+            } else {
+                println("Error: \(error.localizedDescription)")
+            }
+        })
+    }
+    
+    func parseServices(data: NSData) -> [Service] {
+        var output = [Service]()
+        var error: NSError?
+        let services = NSJSONSerialization.JSONObjectWithData(data, options: .MutableLeaves, error: &error) as! NSArray
+        for s in services {
+            if let sDict:NSDictionary = s as? NSDictionary {
+                if let sCode = sDict["service_code"] as? String, sName = sDict["service_name"] as? String {
+                    let service = Service(code: sCode, name: sName)
+                    output.append(service)
+                }
+            }
+        }
+        return output
+    }
+    
     func getConcerns(completionHandler: ([Concern]) -> Void) {
         let url = NSURL(string: "http://anliegen.bonn.de/georeport/v2/requests.json")
         let request = NSURLRequest(URL: url!)
         NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue(), completionHandler: { (response, data, error) -> Void in
-            let concerns = self.parseData(data)
+            let concerns = self.parseConcerns(data)
             completionHandler(concerns)
         })
     }
     
-    func parseData(data: NSData) -> [Concern] {
+    func parseConcerns(data: NSData) -> [Concern] {
         var output = [Concern]()
         var error: NSError?
         let concerns = NSJSONSerialization.JSONObjectWithData(data, options: .MutableLeaves, error: &error) as! NSArray

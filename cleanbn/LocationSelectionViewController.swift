@@ -36,17 +36,16 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
         mapView.delegate = self
         
         // Add Gesture Recognizers
-        let panRecognizer = UIPanGestureRecognizer(target: self, action: "didPan:")
+        let panRecognizer = UIPanGestureRecognizer(target: self, action: "handlePan:")
         panRecognizer.delegate = self
         panRecognizer.minimumNumberOfTouches = 1
         mapView.addGestureRecognizer(panRecognizer)
         
-        let pinchRecognizer = UIPinchGestureRecognizer(target: self, action: "didPan:")
+        let pinchRecognizer = UIPinchGestureRecognizer(target: self, action: "handlePan:")
         pinchRecognizer.delegate = self
         mapView.addGestureRecognizer(pinchRecognizer)
         
-        let tapRecognizer = UITapGestureRecognizer(target: self, action: "didPan:")
-        tapRecognizer.numberOfTapsRequired = 2
+        let tapRecognizer = UITapGestureRecognizer(target: self, action: "handleTap:")
         mapView.addGestureRecognizer(tapRecognizer)
         
         locationManager.delegate = self
@@ -76,7 +75,7 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
         streetView.layer.borderColor = continueButton.layer.borderColor
     }
     
-    func didPan(sender: UIGestureRecognizer) {
+    func handlePan(sender: UIGestureRecognizer) {
         customLocation = true
         userLocationButton.selected = false
         if sender.state == UIGestureRecognizerState.Began {
@@ -85,6 +84,11 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
         if sender.state == UIGestureRecognizerState.Ended {
             //updateLocationName()
         }
+    }
+    
+    func handleTap(sender: UIGestureRecognizer) {
+        customLocation = true
+        userLocationButton.selected = false
     }
     
     func updateLocationName() {
@@ -179,6 +183,15 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "nextStep" {
+            if location == nil {
+                let alert = UIAlertController(title: "No Location selected", message: "Please select a location before continuing.", preferredStyle: UIAlertControllerStyle.Alert)
+                let action = UIAlertAction(title: "OK", style: .Cancel, handler: { (action) -> Void in
+                    self.dismissViewControllerAnimated(true, completion: nil)
+                })
+                alert.addAction(action)
+                self.presentViewController(alert, animated: true, completion: nil)
+                return
+            }
             if let dest = segue.destinationViewController as? AddViewController {
                 dest.location = location
                 dest.locationName = streetLabel.text
