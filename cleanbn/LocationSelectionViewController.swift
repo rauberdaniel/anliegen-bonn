@@ -35,6 +35,9 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
         
         mapView.delegate = self
         
+        // Add Settings Button
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "⚙", style: UIBarButtonItemStyle.Plain, target: self, action: "showSettings:")
+        
         // Add Gesture Recognizers
         let panRecognizer = UIPanGestureRecognizer(target: self, action: "handlePan:")
         panRecognizer.delegate = self
@@ -51,7 +54,7 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
         locationManager.delegate = self
         locationManager.requestWhenInUseAuthorization()
         
-        streetLabel.text = "Searching…"
+        streetLabel.text = "Lokalisiere…"
         userLocationButton.selected = true
         
         if location != nil {
@@ -75,6 +78,10 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
         streetView.layer.borderColor = continueButton.layer.borderColor
     }
     
+    func showSettings(sender: AnyObject) {
+        self.performSegueWithIdentifier("showSettings", sender: self)
+    }
+    
     func handlePan(sender: UIGestureRecognizer) {
         customLocation = true
         userLocationButton.selected = false
@@ -93,7 +100,7 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
     
     func updateLocationName() {
         if dragging > 0 {
-            streetLabel.text = "Searching…"
+            streetLabel.text = "Lokalisiere…"
         } else {
             geocoder.reverseGeocodeLocation(location, completionHandler: { (placemarks, error) -> Void in
                 if (self.dragging > 0 || error != nil || placemarks.count == 0) {
@@ -184,8 +191,8 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "nextStep" {
             if location == nil {
-                let alert = UIAlertController(title: "No Location selected", message: "Please select a location before continuing.", preferredStyle: UIAlertControllerStyle.Alert)
-                let action = UIAlertAction(title: "OK", style: .Cancel, handler: { (action) -> Void in
+                let alert = UIAlertController(title: "Kein Ort ausgewählt", message: "Bitte wähle den Ort deines Anliegens aus, um fortfahren zu können.", preferredStyle: UIAlertControllerStyle.Alert)
+                let action = UIAlertAction(title: "Ok", style: .Cancel, handler: { (action) -> Void in
                     self.dismissViewControllerAnimated(true, completion: nil)
                 })
                 alert.addAction(action)

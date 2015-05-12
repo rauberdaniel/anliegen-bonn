@@ -23,24 +23,6 @@ class ServiceManager: NSObject {
     
     override init() {
         super.init()
-        
-        /*
-        let types: [[String: String]] = [
-            ["id":"0001", "name":"Ampel defekt"],
-            ["id":"0002", "name":"Glassplitter"],
-            ["id":"0006", "name":"Grünüberwuchs Verkehrsraum"],
-            ["id":"0009", "name":"Herrenlose Fahrräder, Fahrzeuge (Schrott)"],
-            ["id":"0010", "name":"Wilde Müllkippe, Sperrmüllreste"],
-            ["id":"0021", "name":"Graffiti"],
-        ]
-        
-        for type in types {
-            if let name = type["name"], id = type["id"] {
-                services.append(Service(code: id, name: name))
-            }
-        }
-        */
-        
         updateServices()
     }
     
@@ -54,11 +36,11 @@ class ServiceManager: NSObject {
     }
     
     func updateServices() {
-        println("updateServices");
+        println("ServiceManager :: Updating");
         ApiHandler.sharedHandler.getServices { (services) -> Void in
             let data = NSKeyedArchiver.archivedDataWithRootObject(services)
             NSUserDefaults.standardUserDefaults().setObject(data, forKey: "services")
-            println("ServiceManager :: Services updated")
+            println("ServiceManager :: Updated")
         }
     }
 }

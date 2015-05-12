@@ -89,6 +89,10 @@ class Concern: NSObject, CLLocationManagerDelegate {
         dict["lat"] = location?.coordinate.latitude
         dict["long"] = location?.coordinate.longitude
         dict["address"] = locationName
+        dict["description"] = desc
+        if let mail = NSUserDefaults.standardUserDefaults().objectForKey("email") as? String {
+            dict["email"] = mail
+        }
         
         if let image = image {
             let imageData = UIImageJPEGRepresentation(image, 0.6)

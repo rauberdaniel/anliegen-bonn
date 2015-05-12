@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		65448A401B00E83D00C45B0B /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65448A3F1B00E83D00C45B0B /* SettingsViewController.swift */; };
 		654536421AE2BB9C007C0A1E /* ConcernTypeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 654536411AE2BB9C007C0A1E /* ConcernTypeViewController.swift */; };
 		654536451AE2C8D4007C0A1E /* ServiceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 654536441AE2C8D4007C0A1E /* ServiceManager.swift */; };
 		654536471AE2C9C8007C0A1E /* Service.swift in Sources */ = {isa = PBXBuildFile; fileRef = 654536461AE2C9C8007C0A1E /* Service.swift */; };
@@ -36,6 +37,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		65448A3F1B00E83D00C45B0B /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		654536411AE2BB9C007C0A1E /* ConcernTypeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConcernTypeViewController.swift; sourceTree = "<group>"; };
 		654536441AE2C8D4007C0A1E /* ServiceManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServiceManager.swift; sourceTree = "<group>"; };
 		654536461AE2C9C8007C0A1E /* Service.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Service.swift; sourceTree = "<group>"; };
@@ -131,6 +133,7 @@
 				656840221AE3067C008A8D31 /* AppDelegate.swift */,
 				65C2A5DA1AE972EE007AFEC9 /* LocationSelectionViewController.swift */,
 				656840211AE3067C008A8D31 /* AddViewController.swift */,
+				65448A3F1B00E83D00C45B0B /* SettingsViewController.swift */,
 			);
 			path = cleanbn;
 			sourceTree = "<group>";
@@ -268,6 +271,7 @@
 				658CB5051AECE91A00C6077E /* AddressManager.swift in Sources */,
 				654536451AE2C8D4007C0A1E /* ServiceManager.swift in Sources */,
 				654536471AE2C9C8007C0A1E /* Service.swift in Sources */,
+				65448A401B00E83D00C45B0B /* SettingsViewController.swift in Sources */,
 				656840201AE2F326008A8D31 /* ApiHandler.swift in Sources */,
 				65C2A5DB1AE972EE007AFEC9 /* LocationSelectionViewController.swift in Sources */,
 				656840241AE3067C008A8D31 /* AppDelegate.swift in Sources */,

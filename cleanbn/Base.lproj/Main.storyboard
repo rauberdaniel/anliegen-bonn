@@ -5,7 +5,7 @@
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
-        <!--Location-->
+        <!--Ort auswählen-->
         <scene sceneID="IdO-wX-p58">
             <objects>
                 <viewController id="f63-Cz-FiV" customClass="LocationSelectionViewController" customModule="cleanbn" customModuleProvider="target" sceneMemberID="viewController">
@@ -28,7 +28,7 @@
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="18"/>
                                 <color key="tintColor" red="0.99989169836044312" green="1" blue="0.99988096952438354" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <state key="normal" title="Continue">
+                                <state key="normal" title="Fortfahren">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <connections>
@@ -69,7 +69,7 @@
                                                 <constraint firstAttribute="height" constant="44" id="wEs-BX-2eQ"/>
                                             </constraints>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                     </subviews>
@@ -103,7 +103,7 @@
                             <constraint firstItem="yCV-iM-vuY" firstAttribute="top" secondItem="WEl-Vn-b0O" secondAttribute="top" id="qYL-R2-aWw"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="Location" id="bW1-KB-Kd0"/>
+                    <navigationItem key="navigationItem" title="Ort auswählen" id="bW1-KB-Kd0"/>
                     <connections>
                         <outlet property="continueButton" destination="RzF-Rd-cJ8" id="QeC-53-TQk"/>
                         <outlet property="locationMarker" destination="H19-2W-gI8" id="UNG-0S-OpF"/>
@@ -111,6 +111,7 @@
                         <outlet property="streetLabel" destination="3OF-JQ-6sZ" id="K1h-dE-ufq"/>
                         <outlet property="streetView" destination="eVh-U8-3oh" id="wDP-vF-dGv"/>
                         <outlet property="userLocationButton" destination="9Sh-mQ-qqa" id="fF7-Oi-3u9"/>
+                        <segue destination="rUM-k4-8o7" kind="presentation" identifier="showSettings" id="N2a-ri-ttO"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="MNT-c6-aAf" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -168,7 +169,7 @@
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="bTu-Cv-cd9" id="vCk-tV-E51">
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Type" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="xUk-bH-DtB">
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Kategorie" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="xUk-bH-DtB">
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
@@ -188,7 +189,31 @@
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
-                            <tableViewSection id="poS-Xr-Ljv">
+                            <tableViewSection headerTitle="Beschreibung" id="7ck-Ra-PP5">
+                                <cells>
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" rowHeight="100" id="UAY-Ey-IAH">
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="UAY-Ey-IAH" id="TVB-vw-GSI">
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="TSQ-2o-oUx">
+                                                    <rect key="frame" x="8" y="8" width="584" height="83"/>
+                                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                                </textView>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="TSQ-2o-oUx" firstAttribute="top" secondItem="TVB-vw-GSI" secondAttribute="topMargin" id="Dt0-h0-q6f"/>
+                                                <constraint firstItem="TSQ-2o-oUx" firstAttribute="leading" secondItem="TVB-vw-GSI" secondAttribute="leadingMargin" id="gF0-ji-SN3"/>
+                                                <constraint firstAttribute="bottomMargin" secondItem="TSQ-2o-oUx" secondAttribute="bottom" id="mGu-dW-4jV"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="TSQ-2o-oUx" secondAttribute="trailing" id="pdB-xj-x3N"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </cells>
+                            </tableViewSection>
+                            <tableViewSection headerTitle="Fotos" id="poS-Xr-Ljv">
                                 <cells>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" rowHeight="50" id="DYi-6z-gZd">
                                         <autoresizingMask key="autoresizingMask"/>
@@ -197,7 +222,7 @@
                                             <subviews>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nTV-vf-wPN">
                                                     <rect key="frame" x="0.0" y="0.0" width="600" height="49"/>
-                                                    <state key="normal" title="Add Photo">
+                                                    <state key="normal" title="Foto hinzufügen">
                                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                                     </state>
                                                 </button>
@@ -221,7 +246,7 @@
                                             <subviews>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="19O-NT-mrJ">
                                                     <rect key="frame" x="0.0" y="0.0" width="600" height="49"/>
-                                                    <state key="normal" title="Send">
+                                                    <state key="normal" title="Senden">
                                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                                     </state>
                                                 </button>
@@ -244,12 +269,14 @@
                     </tableView>
                     <navigationItem key="navigationItem" title="Details" id="x2S-Q6-ODf"/>
                     <connections>
+                        <outlet property="descriptionField" destination="TSQ-2o-oUx" id="ZdX-1c-k9q"/>
                         <outlet property="mapView" destination="aVI-ow-1bB" id="Li0-pQ-KGz"/>
                         <outlet property="photoButton" destination="nTV-vf-wPN" id="5LU-VT-oHD"/>
                         <outlet property="photoCell" destination="DYi-6z-gZd" id="CPf-do-1K4"/>
                         <outlet property="sendButton" destination="19O-NT-mrJ" id="odR-Nu-IMO"/>
                         <outlet property="serviceCell" destination="bTu-Cv-cd9" id="A6d-TR-4wX"/>
                         <outlet property="streetCell" destination="soc-km-zxx" id="qq5-4o-nxa"/>
+                        <segue destination="rUM-k4-8o7" kind="presentation" identifier="showSettings" id="ZKQ-kK-hXr"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="72H-4Z-R2d" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -290,6 +317,65 @@
             </objects>
             <point key="canvasLocation" x="2838" y="-681"/>
         </scene>
+        <!--Einstellungen-->
+        <scene sceneID="6r2-mq-fXC">
+            <objects>
+                <tableViewController id="SZh-VG-7Wh" customClass="SettingsViewController" customModule="cleanbn" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" allowsSelection="NO" showsSelectionImmediatelyOnTouchBegin="NO" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" id="IP2-yB-f9T">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        <prototypes>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="MailCell" id="pRO-tr-o3h">
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="pRO-tr-o3h" id="TQ6-lU-aQO">
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <textField opaque="NO" clipsSubviews="YES" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="E-Mail Adresse" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="eiJ-NZ-T7O">
+                                            <rect key="frame" x="8" y="8" width="584" height="27"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                            <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="emailAddress"/>
+                                        </textField>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="eiJ-NZ-T7O" firstAttribute="top" secondItem="TQ6-lU-aQO" secondAttribute="topMargin" id="Bqx-cE-M25"/>
+                                        <constraint firstAttribute="trailingMargin" secondItem="eiJ-NZ-T7O" secondAttribute="trailing" id="FKd-jb-sqp"/>
+                                        <constraint firstAttribute="bottomMargin" secondItem="eiJ-NZ-T7O" secondAttribute="bottom" id="Qb3-tK-4Im"/>
+                                        <constraint firstItem="eiJ-NZ-T7O" firstAttribute="leading" secondItem="TQ6-lU-aQO" secondAttribute="leadingMargin" id="f7O-TP-RlV"/>
+                                    </constraints>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <sections/>
+                        <connections>
+                            <outlet property="dataSource" destination="SZh-VG-7Wh" id="FGx-Kf-pU6"/>
+                            <outlet property="delegate" destination="SZh-VG-7Wh" id="K33-B3-GrG"/>
+                        </connections>
+                    </tableView>
+                    <toolbarItems/>
+                    <navigationItem key="navigationItem" title="Einstellungen" id="Lno-Zk-ENZ"/>
+                    <nil key="simulatedBottomBarMetrics"/>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Izr-9p-5xD" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3659" y="-1353"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="zvN-f2-36h">
+            <objects>
+                <navigationController id="rUM-k4-8o7" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="RLI-BB-2JG">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="SZh-VG-7Wh" kind="relationship" relationship="rootViewController" id="kV0-Ld-aKt"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ref-J1-9GI" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2838" y="-1353"/>
+        </scene>
         <!--Navigation Controller-->
         <scene sceneID="QT1-Yu-JIi">
             <objects>
@@ -312,5 +398,8 @@
         <image name="UserLocate" width="30" height="30"/>
         <image name="UserLocate Inactive" width="30" height="30"/>
     </resources>
+    <inferredMetricsTieBreakers>
+        <segue reference="ZKQ-kK-hXr"/>
+    </inferredMetricsTieBreakers>
     <color key="tintColor" red="0.80526703596115112" green="0.028064688667654991" blue="0.10187920182943344" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
 </document>

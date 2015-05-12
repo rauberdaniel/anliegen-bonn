@@ -17,8 +17,8 @@ class AddressManager: NSObject {
     }
     
     func getAddressStringFromPlacemark(placemark: CLPlacemark?, includeLocality: Bool) -> String {
-        var street = "Unknown Street"
-        var locality = ", Unknown City"
+        var street = "Straße unbekannt"
+        var locality = ", Stadt unbekannt"
         if let placemark = placemark {
             if placemark.thoroughfare != nil {
                 street = "\(placemark.thoroughfare)"

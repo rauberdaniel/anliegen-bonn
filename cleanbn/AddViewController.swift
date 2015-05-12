@@ -11,14 +11,16 @@ import CoreLocation
 import MapKit
 import MobileCoreServices
 import CoreGraphics
+import Foundation
 
-class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMapViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIGestureRecognizerDelegate {
+class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMapViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIGestureRecognizerDelegate, UITextViewDelegate {
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var streetCell: UITableViewCell!
     @IBOutlet weak var serviceCell: UITableViewCell!
     @IBOutlet weak var sendButton: UIButton!
     @IBOutlet weak var photoButton: UIButton!
     @IBOutlet weak var photoCell: UITableViewCell!
+    @IBOutlet weak var descriptionField: UITextView!
     
     let locationManager = CLLocationManager()
     var location: CLLocation?
@@ -44,11 +46,17 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
         
         //let cancelButton = UIBarButtonItem(barButtonSystemItem: .Cancel, target: self, action: "cancel:")
         //self.navigationItem.leftBarButtonItem = cancelButton
+        tableView.keyboardDismissMode = UIScrollViewKeyboardDismissMode.OnDrag
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardWillShow:", name: UIKeyboardWillShowNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardDidHide:", name: UIKeyboardDidHideNotification, object: nil)
         
         streetCell.textLabel?.text = locationName
         
         sendButton.addTarget(self, action: "sendConcern:", forControlEvents: .TouchUpInside)
         sendButton.enabled = false
+        
+        descriptionField.delegate = self
         
         photoButton.addTarget(self, action: "capturePhoto:", forControlEvents: .TouchUpInside)
         
@@ -67,28 +75,57 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
         }
     }
     
+    // MARK: - Missing Data
+    
+    func showSettingsView() {
+        self.performSegueWithIdentifier("showSettings", sender: self)
+    }
+    
+    func checkSettings() -> Bool {
+        if let mail = NSUserDefaults.standardUserDefaults().objectForKey("email") as? String {
+            if isValidEmail(mail) {
+                return true
+            }
+        }
+        return false
+    }
+    
+    // MARK: - Validation
+    
+    func isValidEmail(testStr:String) -> Bool {
+        let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}"
+        
+        let emailTest = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
+        return emailTest.evaluateWithObject(testStr)
+    }
+    
     // MARK: - Submission
     
     func sendConcern(sender: AnyObject) {
         sendButton.enabled = false
+        
+        if !checkSettings() {
+            showSettingsView()
+            sendButton.enabled = true
+            return
+        }
+        
+        let closeAction = UIAlertAction(title: "Ok", style: .Cancel, handler: nil)
+        
         if let service: Service = service, location = location {
             let locationName = AddressManager.sharedManager.getAddressStringFromPlacemark(placemark, includeLocality: true)
-            let concern = Concern(service: service, location: location, address: locationName, description: nil, image: image)
+            let concern = Concern(service: service, location: location, address: locationName, description: descriptionField.text, image: image)
             
             ApiHandler.sharedHandler.submitConcern(concern, completionHandler: { (response, data, error) -> Void in
                 if error != nil {
                     self.sendButton.enabled = true
-                    let alert = UIAlertController(title: "Error", message: "Your concern could not be sent! Please enable network access to send your concern.", preferredStyle: .Alert)
-                    let action = UIAlertAction(title: "Ok", style: .Cancel, handler: { (action) -> Void in
-                        self.dismissViewControllerAnimated(true, completion: nil)
-                    })
-                    alert.addAction(action)
+                    let alert = UIAlertController(title: "Fehler", message: "Dein Anliegen konnte nicht übermittelt werden. Bitte verbinde dich mit dem Internet, um dein Anliegen zu senden.", preferredStyle: .Alert)
+                    alert.addAction(closeAction)
                     self.presentViewController(alert, animated: true, completion: nil)
                     return
                 }
-                let alert = UIAlertController(title: "Concern sent", message: "Your concern has been successfully transmitted", preferredStyle: UIAlertControllerStyle.Alert)
-                let action = UIAlertAction(title: "Ok", style: UIAlertActionStyle.Cancel, handler: { (action) -> Void in
-                    self.dismissViewControllerAnimated(true, completion: nil)
+                let alert = UIAlertController(title: "Anliegen übermittelt", message: "Dein Anliegen wurde erfolgreich übermittelt und wird zeitnah bearbeitet.", preferredStyle: UIAlertControllerStyle.Alert)
+                let action = UIAlertAction(title: "Ok", style: .Cancel, handler: { (action) -> Void in
                     self.navigationController?.popViewControllerAnimated(true)
                 })
                 alert.addAction(action)
@@ -97,10 +134,7 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
             
         } else {
             // no service specified
-            let alert = UIAlertController(title: "No Service specified", message: "Please specify a service to submit your concern.", preferredStyle: UIAlertControllerStyle.Alert)
-            let closeAction = UIAlertAction(title: "Ok", style: UIAlertActionStyle.Cancel, handler: { (action) -> Void in
-                self.dismissViewControllerAnimated(true, completion: nil)
-            })
+            let alert = UIAlertController(title: "Keine Kategorie ausgewählt", message: "Bitte wähle eine Kategorie aus, um dein Anliegen einzureichen.", preferredStyle: UIAlertControllerStyle.Alert)
             alert.addAction(closeAction)
         }
     }
@@ -164,13 +198,7 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
     
     func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [NSObject : AnyObject]) {
         if let image = info[NSString(string: "UIImagePickerControllerOriginalImage")] as? UIImage {
-            photoButton.removeFromSuperview()
-            let imageView = UIImageView(image: image)
-            imageView.clipsToBounds = true
-            imageView.contentMode = UIViewContentMode.ScaleAspectFit
-            imageView.frame = CGRectMake(0, 0, photoCell.frame.width, photoCell.frame.height)
-            photoCell.addSubview(imageView)
-            //let cellHeight = photoCell.frame.width/image.size.width * image.size.height
+            photoButton.titleLabel?.text = "1 Foto ausgewählt"
             let smallImage = imageWithImage(image, scaledToMaxSize: CGSizeMake(2048, 2048))
             self.image = smallImage
         }
@@ -215,5 +243,23 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         
     }
+    
+    // MARK: - Keyboard Handling
+    
+    func keyboardWillShow(notification: NSNotification) {
+        if let userInfo = notification.userInfo as? Dictionary<NSString, AnyObject> {
+            if let keyboardRect = userInfo[UIKeyboardFrameEndUserInfoKey] as? NSValue {
+                tableView.contentInset.bottom =  keyboardRect.CGRectValue().height
+                if let cell = descriptionField.superview?.superview as? UITableViewCell, indexPath = tableView.indexPathForCell(cell) {
+                    tableView.scrollToRowAtIndexPath(indexPath, atScrollPosition: .Top, animated: true)
+                }
+            }
+        }
+    }
+    
+    func keyboardDidHide(notification: NSNotification) {
+        tableView.contentInset.bottom = 0
+    }
+    
     
 }
