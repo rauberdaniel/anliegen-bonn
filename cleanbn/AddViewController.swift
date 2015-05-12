@@ -75,7 +75,7 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
         }
     }
     
-    // MARK: - Missing Data
+    // MARK: - Validation
     
     func showSettingsView() {
         self.performSegueWithIdentifier("showSettings", sender: self)
@@ -89,8 +89,6 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
         }
         return false
     }
-    
-    // MARK: - Validation
     
     func isValidEmail(testStr:String) -> Bool {
         let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}"
@@ -198,7 +196,7 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
     
     func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [NSObject : AnyObject]) {
         if let image = info[NSString(string: "UIImagePickerControllerOriginalImage")] as? UIImage {
-            photoButton.titleLabel?.text = "1 Foto ausgewählt"
+            photoButton.setTitle("1 Foto ausgewählt", forState: UIControlState.Normal)
             let smallImage = imageWithImage(image, scaledToMaxSize: CGSizeMake(2048, 2048))
             self.image = smallImage
         }
@@ -247,18 +245,18 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
     // MARK: - Keyboard Handling
     
     func keyboardWillShow(notification: NSNotification) {
-        if let userInfo = notification.userInfo as? Dictionary<NSString, AnyObject> {
-            if let keyboardRect = userInfo[UIKeyboardFrameEndUserInfoKey] as? NSValue {
-                tableView.contentInset.bottom =  keyboardRect.CGRectValue().height
-                if let cell = descriptionField.superview?.superview as? UITableViewCell, indexPath = tableView.indexPathForCell(cell) {
-                    tableView.scrollToRowAtIndexPath(indexPath, atScrollPosition: .Top, animated: true)
-                }
+        if let userInfo = notification.userInfo as? Dictionary<NSString, AnyObject>, keyboardRect = userInfo[UIKeyboardFrameEndUserInfoKey] as? NSValue {
+            tableView.contentInset.bottom =  keyboardRect.CGRectValue().height
+            if let cell = descriptionField.superview?.superview as? UITableViewCell, indexPath = tableView.indexPathForCell(cell) {
+                tableView.scrollToRowAtIndexPath(indexPath, atScrollPosition: .Top, animated: true)
             }
         }
     }
     
     func keyboardDidHide(notification: NSNotification) {
-        tableView.contentInset.bottom = 0
+        UIView.animateWithDuration(0.2, animations: { () -> Void in
+            self.tableView.contentInset.bottom = 0
+        })
     }
     
     
