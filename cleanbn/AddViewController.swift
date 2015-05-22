@@ -58,7 +58,7 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
         
         descriptionField.delegate = self
         
-        photoButton.addTarget(self, action: "capturePhoto:", forControlEvents: .TouchUpInside)
+        photoButton.addTarget(self, action: "attachPhoto:", forControlEvents: .TouchUpInside)
         
         locationManager.delegate = self
         locationManager.requestWhenInUseAuthorization()
@@ -83,18 +83,11 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
     
     func checkSettings() -> Bool {
         if let mail = NSUserDefaults.standardUserDefaults().objectForKey("email") as? String {
-            if isValidEmail(mail) {
+            if ValidationHandler.isValidEmail(mail) {
                 return true
             }
         }
         return false
-    }
-    
-    func isValidEmail(testStr:String) -> Bool {
-        let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}"
-        
-        let emailTest = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
-        return emailTest.evaluateWithObject(testStr)
     }
     
     // MARK: - Submission
@@ -108,6 +101,9 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
             return
         }
         
+        let progressAlert = UIAlertController(title: "Anliegen wird übermittelt…", message: "Bitte hab einen Moment Geduld, während dein Anliegen übermittelt wird.", preferredStyle: .Alert)
+        presentViewController(progressAlert, animated: true, completion: nil)
+        
         let closeAction = UIAlertAction(title: "Ok", style: .Cancel, handler: nil)
         
         if let service: Service = service, location = location {
@@ -119,6 +115,7 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
                     self.sendButton.enabled = true
                     let alert = UIAlertController(title: "Fehler", message: "Dein Anliegen konnte nicht übermittelt werden. Bitte verbinde dich mit dem Internet, um dein Anliegen zu senden.", preferredStyle: .Alert)
                     alert.addAction(closeAction)
+                    progressAlert.dismissViewControllerAnimated(true, completion: nil)
                     self.presentViewController(alert, animated: true, completion: nil)
                     return
                 }
@@ -127,6 +124,7 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
                     self.navigationController?.popViewControllerAnimated(true)
                 })
                 alert.addAction(action)
+                progressAlert.dismissViewControllerAnimated(true, completion: nil)
                 self.presentViewController(alert, animated: true, completion: nil)
             })
             
@@ -203,13 +201,32 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
         self.dismissViewControllerAnimated(true, completion: {})
     }
     
-    func capturePhoto(sender: AnyObject) {
+    func attachPhoto(sender: AnyObject) {
+        let alert = UIAlertController(title: "Foto auswählen", message: "Aus welcher Quelle möchtest du ein Foto hinzufügen?", preferredStyle: UIAlertControllerStyle.ActionSheet)
         if UIImagePickerController.isSourceTypeAvailable(.Camera) {
+            let captureAction = UIAlertAction(title: "Kamera", style: .Default) { (action) -> Void in
+                self.selectPhoto(.Camera)
+            }
+            alert.addAction(captureAction)
+        }
+        if UIImagePickerController.isSourceTypeAvailable(.PhotoLibrary) {
+            let selectAction = UIAlertAction(title: "Bibliothek", style: .Default) { (action) -> Void in
+                self.selectPhoto(.PhotoLibrary)
+            }
+            alert.addAction(selectAction)
+        }
+        let cancelAction = UIAlertAction(title: "Abbrechen", style: .Cancel, handler: nil)
+        alert.addAction(cancelAction)
+        presentViewController(alert, animated: true, completion: nil)
+    }
+    
+    func selectPhoto(sourceType: UIImagePickerControllerSourceType) {
+        if UIImagePickerController.isSourceTypeAvailable(.PhotoLibrary) {
             let imagePicker = UIImagePickerController()
             imagePicker.delegate = self
             imagePicker.mediaTypes = [kUTTypeImage]
             imagePicker.allowsEditing = false
-            imagePicker.sourceType = .Camera
+            imagePicker.sourceType = sourceType
             
             self.presentViewController(imagePicker, animated: true, completion: {})
         }

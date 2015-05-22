@@ -102,11 +102,21 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
         if dragging > 0 {
             streetLabel.text = "Lokalisiere…"
         } else {
+            println("Geocoder :: ReverseGeocodeLocation")
             geocoder.reverseGeocodeLocation(location, completionHandler: { (placemarks, error) -> Void in
-                if (self.dragging > 0 || error != nil || placemarks.count == 0) {
+                if error != nil {
+                    println("Geocoder :: Error :: \(error.localizedDescription)")
+                    return
+                }
+                if (self.dragging > 0 || placemarks.count == 0) {
                     return
                 }
                 if let placemark = placemarks[0] as? CLPlacemark {
+                    if placemark.thoroughfare == nil {
+                        println("Geocoder :: ReturnedNil")
+                        self.updateLocationName()
+                        return
+                    }
                     let street = AddressManager.sharedManager.getAddressStringFromPlacemark(placemark, includeLocality: false)
                     self.streetLabel.text = street
                 }

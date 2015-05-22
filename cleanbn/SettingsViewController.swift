@@ -31,7 +31,7 @@ class SettingsViewController: UITableViewController {
         var success: Bool = false
         if let mailCell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 0)) {
             if let mailField = mailCell.viewWithTag(2) as? UITextField {
-                if isValidEmail(mailField.text) {
+                if ValidationHandler.isValidEmail(mailField.text) {
                     NSUserDefaults.standardUserDefaults().setObject(mailField.text, forKey: "email")
                     NSUserDefaults.standardUserDefaults().synchronize()
                     success = true
@@ -49,15 +49,6 @@ class SettingsViewController: UITableViewController {
     
     func close(sender: AnyObject) {
         self.dismissViewControllerAnimated(true, completion: nil)
-    }
-    
-    // MARK: - Validation
-    
-    func isValidEmail(testStr:String) -> Bool {
-        let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}"
-        
-        let emailTest = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
-        return emailTest.evaluateWithObject(testStr)
     }
     
     // MARK: - TableViewController
