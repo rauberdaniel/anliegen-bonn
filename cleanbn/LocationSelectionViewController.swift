@@ -36,7 +36,9 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
         mapView.delegate = self
         
         // Add Settings Button
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "⚙", style: UIBarButtonItemStyle.Plain, target: self, action: "showSettings:")
+        let settingsIcon = UIImage(named: "SettingsIcon")
+        let settingsButton = UIBarButtonItem(image: settingsIcon, style: .Plain, target: self, action: "showSettings:")
+        self.navigationItem.leftBarButtonItem = settingsButton
         
         // Add Gesture Recognizers
         let panRecognizer = UIPanGestureRecognizer(target: self, action: "handlePan:")
@@ -102,7 +104,12 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
         if dragging > 0 {
             streetLabel.text = "Lokalisiere…"
         } else {
-            println("Geocoder :: ReverseGeocodeLocation")
+            if !ValidationHandler.isValidLocation(location) {
+                println("Geocoder :: Invalid Location")
+                streetLabel.text = "Ungültige Position"
+                return
+            }
+            println("Geocoder :: ReverseGeocodeLocation :: \(location?.coordinate.latitude),\(location?.coordinate.longitude)")
             geocoder.reverseGeocodeLocation(location, completionHandler: { (placemarks, error) -> Void in
                 if error != nil {
                     println("Geocoder :: Error :: \(error.localizedDescription)")
@@ -114,7 +121,8 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
                 if let placemark = placemarks[0] as? CLPlacemark {
                     if placemark.thoroughfare == nil {
                         println("Geocoder :: ReturnedNil")
-                        self.updateLocationName()
+                        self.streetLabel.text = "Adresse unbekannt"
+                        //self.updateLocationName()
                         return
                     }
                     let street = AddressManager.sharedManager.getAddressStringFromPlacemark(placemark, includeLocality: false)
@@ -190,7 +198,7 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
     }
     
     func moveToLocation(location: CLLocation) {
-        let span = MKCoordinateSpanMake(0.007, 0.007)
+        let span = MKCoordinateSpanMake(0.0024, 0.0024)
         let region: MKCoordinateRegion = MKCoordinateRegionMake(location.coordinate, span)
         mapView.setRegion(region, animated: animateToNewLocation)
         animateToNewLocation = true
@@ -200,12 +208,10 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "nextStep" {
-            if location == nil {
-                let alert = UIAlertController(title: "Kein Ort ausgewählt", message: "Bitte wähle den Ort deines Anliegens aus, um fortfahren zu können.", preferredStyle: UIAlertControllerStyle.Alert)
-                let action = UIAlertAction(title: "Ok", style: .Cancel, handler: { (action) -> Void in
-                    self.dismissViewControllerAnimated(true, completion: nil)
-                })
-                alert.addAction(action)
+            if !ValidationHandler.isValidLocation(location) {
+                let cancelAction = UIAlertAction(title: "Abbrechen", style: .Cancel, handler: nil)
+                let alert = UIAlertController(title: "Ungültige Position", message: "Die ausgewählte Position gehört nicht zur Stadt Bonn und kann deshalb nicht erfasst werden.", preferredStyle: .Alert)
+                alert.addAction(cancelAction)
                 self.presentViewController(alert, animated: true, completion: nil)
                 return
             }

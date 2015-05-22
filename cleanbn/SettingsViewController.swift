@@ -71,6 +71,14 @@ class SettingsViewController: UITableViewController {
         return cell
     }
     
+    override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        if section == 0 {
+            return "E-Mail Adresse"
+        }
+        
+        return ""
+    }
+    
     /*
     // MARK: - Navigation
     
