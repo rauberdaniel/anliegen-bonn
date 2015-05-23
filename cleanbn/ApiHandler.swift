@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 private let _ApiHandlerInstance = ApiHandler()
 
@@ -65,7 +66,8 @@ class ApiHandler: NSObject {
         return output
     }
     
-    func submitConcern(concern: Concern, completionHandler: (response: NSURLResponse!, data: NSData!, error: NSError!) -> Void) {
+    /*
+    func submitConcernAsJSON(concern: Concern, completionHandler: (response: NSURLResponse!, data: NSData!, error: NSError!) -> Void) {
         let url = NSURL(string: "http://cleanbn.danielrauber.de/submit.php")
         
         let data = concern.getJSONData()
@@ -78,6 +80,66 @@ class ApiHandler: NSObject {
             NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue(), completionHandler: completionHandler)
         } else {
             println("No Concern given")
+        }
+    }
+    */
+    
+    func submitConcern(concern: Concern, sender: AddViewController) {
+        
+        let progressAlert = UIAlertController(title: "Anliegen wird übermittelt…", message: "Bitte hab einen Moment Geduld, während dein Anliegen übermittelt wird.", preferredStyle: .Alert)
+        sender.presentViewController(progressAlert, animated: true, completion: nil)
+        
+        let closeAction = UIAlertAction(title: "Ok", style: .Cancel, handler: nil)
+        
+        uploadImage(concern, completionHandler: { (imageUrl) -> Void in
+            concern.imageUrl = imageUrl
+            self.submitConcernForm(concern, completionHandler: { (response, data, error) -> Void in
+                if error != nil {
+                    sender.sendButton.enabled = true
+                    let errorAlert = UIAlertController(title: "Fehler", message: "Dein Anliegen konnte nicht übermittelt werden. Bitte verbinde dich mit dem Internet, um dein Anliegen zu senden.", preferredStyle: .Alert)
+                    errorAlert.addAction(closeAction)
+                    progressAlert.dismissViewControllerAnimated(true, completion: { () -> Void in
+                        sender.presentViewController(errorAlert, animated: true, completion: nil)
+                    })
+                    return
+                }
+                let successAlert = UIAlertController(title: "Anliegen übermittelt", message: "Dein Anliegen wurde erfolgreich übermittelt und wird zeitnah bearbeitet.", preferredStyle: UIAlertControllerStyle.Alert)
+                let closeAndBackAction = UIAlertAction(title: "Ok", style: .Cancel, handler: { (action) -> Void in
+                    sender.navigationController?.popViewControllerAnimated(true)
+                })
+                successAlert.addAction(closeAndBackAction)
+                progressAlert.dismissViewControllerAnimated(true, completion: { () -> Void in
+                    sender.presentViewController(successAlert, animated: true, completion: nil)
+                })
+            })
+        })
+    }
+    
+    func submitConcernForm(concern: Concern, completionHandler: (response: NSURLResponse!, data: NSData!, error: NSError!) -> Void) {
+        
+        let url = NSURL(string: "http://cleanbn.danielrauber.de/final.php")
+        
+        let data = concern.getFormData()
+        
+        if let data = data {
+            var request = NSMutableURLRequest(URL: url!)
+            request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+            request.setValue("\(data.length)", forHTTPHeaderField: "Content-Length")
+            request.HTTPMethod = "POST"
+            request.HTTPBody = data
+            NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue(), completionHandler: completionHandler)
+        } else {
+            println("No Concern given")
+        }
+    }
+    
+    func uploadImage(concern: Concern, completionHandler: (imageUrl: NSURL?) -> Void) {
+        if let imageData = concern.getImageData() {
+            let base64ImageString = imageData.base64EncodedStringWithOptions(.allZeros)
+            // Create and Send Request, call completionhandler with returned url
+            completionHandler(imageUrl: NSURL(string: "http://placehold.it/200"))
+        } else {
+            completionHandler(imageUrl: nil)
         }
     }
 }

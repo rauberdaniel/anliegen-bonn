@@ -109,7 +109,7 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
                 streetLabel.text = "Ungültige Position"
                 return
             }
-            println("Geocoder :: ReverseGeocodeLocation :: \(location?.coordinate.latitude),\(location?.coordinate.longitude)")
+            println("Geocoder :: ReverseGeocodeLocation")
             geocoder.reverseGeocodeLocation(location, completionHandler: { (placemarks, error) -> Void in
                 if error != nil {
                     println("Geocoder :: Error :: \(error.localizedDescription)")

@@ -22,7 +22,7 @@ class Concern: NSObject, CLLocationManagerDelegate {
     }
     var desc: String = ""
     var service: Service
-    var imageUrl: String?
+    var imageUrl: NSURL?
     var state: String?
     var image: UIImage?
     
@@ -54,7 +54,7 @@ class Concern: NSObject, CLLocationManagerDelegate {
         if let lat = dict["lat"] as? NSNumber, lon = dict["long"] as? NSNumber {
             location = CLLocation(latitude: lat.doubleValue, longitude: lon.doubleValue)
         }
-        if let imageUrl = dict["media_url"] as? String {
+        if let imageUrlString = dict["media_url"] as? String, imageUrl = NSURL(string: imageUrlString) {
             self.imageUrl = imageUrl
         }
         if let state = dict["status"] as? String {
@@ -81,8 +81,15 @@ class Concern: NSObject, CLLocationManagerDelegate {
         })
     }
     
+    func getImageData() -> NSData? {
+        if let image = image {
+            let imageData = UIImageJPEGRepresentation(image, 0.6)
+            return imageData
+        }
+        return nil
+    }
+    
     func getJSONData() -> NSData? {
-        
         var dict: Dictionary<String, AnyObject> = [:]
         dict["service_name"] = service.name
         dict["service_code"] = service.code
@@ -94,8 +101,7 @@ class Concern: NSObject, CLLocationManagerDelegate {
             dict["email"] = mail
         }
         
-        if let image = image {
-            let imageData = UIImageJPEGRepresentation(image, 0.6)
+        if let imageData = getImageData() {
             let base64ImageString = imageData.base64EncodedStringWithOptions(.allZeros)
             dict["image"] = base64ImageString
         }
@@ -103,6 +109,19 @@ class Concern: NSObject, CLLocationManagerDelegate {
         var parseError: NSError?
         let data = NSJSONSerialization.dataWithJSONObject(dict, options: NSJSONWritingOptions.allZeros, error: &parseError)
         return data
+    }
+    
+    func getFormData() -> NSData? {
+        if let mail = NSUserDefaults.standardUserDefaults().objectForKey("email") as? String, lat = location?.coordinate.latitude, long = location?.coordinate.longitude {
+            var string = "service_code=\(service.code)&lat=\(lat)&long=\(long)&description=\(desc)&email=\(mail)"
+            if let mediaUrl = imageUrl, mediaUrlString = mediaUrl.absoluteString {
+                string += "&media_url=\(mediaUrlString)"
+            }
+            return string.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)
+        } else {
+            println("Concern :: Form Encoding Failed")
+        }
+        return nil
     }
     
 }

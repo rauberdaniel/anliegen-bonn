@@ -101,36 +101,16 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
             return
         }
         
-        let progressAlert = UIAlertController(title: "Anliegen wird übermittelt…", message: "Bitte hab einen Moment Geduld, während dein Anliegen übermittelt wird.", preferredStyle: .Alert)
-        presentViewController(progressAlert, animated: true, completion: nil)
-        
-        let closeAction = UIAlertAction(title: "Ok", style: .Cancel, handler: nil)
-        
         if let service: Service = service, location = location {
             let locationName = AddressManager.sharedManager.getAddressStringFromPlacemark(placemark, includeLocality: true)
             let concern = Concern(service: service, location: location, address: locationName, description: descriptionField.text, image: image)
             
-            ApiHandler.sharedHandler.submitConcern(concern, completionHandler: { (response, data, error) -> Void in
-                if error != nil {
-                    self.sendButton.enabled = true
-                    let alert = UIAlertController(title: "Fehler", message: "Dein Anliegen konnte nicht übermittelt werden. Bitte verbinde dich mit dem Internet, um dein Anliegen zu senden.", preferredStyle: .Alert)
-                    alert.addAction(closeAction)
-                    progressAlert.dismissViewControllerAnimated(true, completion: nil)
-                    self.presentViewController(alert, animated: true, completion: nil)
-                    return
-                }
-                let alert = UIAlertController(title: "Anliegen übermittelt", message: "Dein Anliegen wurde erfolgreich übermittelt und wird zeitnah bearbeitet.", preferredStyle: UIAlertControllerStyle.Alert)
-                let action = UIAlertAction(title: "Ok", style: .Cancel, handler: { (action) -> Void in
-                    self.navigationController?.popViewControllerAnimated(true)
-                })
-                alert.addAction(action)
-                progressAlert.dismissViewControllerAnimated(true, completion: nil)
-                self.presentViewController(alert, animated: true, completion: nil)
-            })
+            ApiHandler.sharedHandler.submitConcern(concern, sender: self)
             
         } else {
             // no service specified
             let alert = UIAlertController(title: "Keine Kategorie ausgewählt", message: "Bitte wähle eine Kategorie aus, um dein Anliegen einzureichen.", preferredStyle: UIAlertControllerStyle.Alert)
+            let closeAction = UIAlertAction(title: "Ok", style: .Cancel, handler: nil)
             alert.addAction(closeAction)
         }
     }
