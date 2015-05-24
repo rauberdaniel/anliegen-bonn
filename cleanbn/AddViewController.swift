@@ -105,13 +105,23 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
             let locationName = AddressManager.sharedManager.getAddressStringFromPlacemark(placemark, includeLocality: true)
             let concern = Concern(service: service, location: location, address: locationName, description: descriptionField.text, image: image)
             
-            ApiHandler.sharedHandler.submitConcern(concern, sender: self)
-            
+            let confirmationAlert = UIAlertController(title: "Anliegen senden?", message: "Möchtest du dein Anliegen übermitteln? Die angegebenen Daten werden somit öffentlich.", preferredStyle: .ActionSheet)
+            let confirmationAction = UIAlertAction(title: "Senden", style: .Default, handler: { (action) -> Void in
+                ApiHandler.sharedHandler.submitConcern(concern, sender: self)
+            })
+            let cancelAction = UIAlertAction(title: "Abbrechen", style: .Cancel, handler: { (action) -> Void in
+                self.sendButton.enabled = true
+            })
+            confirmationAlert.addAction(confirmationAction)
+            confirmationAlert.addAction(cancelAction)
+            presentViewController(confirmationAlert, animated: true, completion: nil)
         } else {
             // no service specified
-            let alert = UIAlertController(title: "Keine Kategorie ausgewählt", message: "Bitte wähle eine Kategorie aus, um dein Anliegen einzureichen.", preferredStyle: UIAlertControllerStyle.Alert)
+            // should not happen as sendButton would be disabled
+            let missingCategoryAlert = UIAlertController(title: "Keine Kategorie ausgewählt", message: "Bitte wähle eine Kategorie aus, um dein Anliegen einzureichen.", preferredStyle: .Alert)
             let closeAction = UIAlertAction(title: "Ok", style: .Cancel, handler: nil)
-            alert.addAction(closeAction)
+            missingCategoryAlert.addAction(closeAction)
+            presentViewController(missingCategoryAlert, animated: true, completion: nil)
         }
     }
     

@@ -15,7 +15,6 @@ class ConcernTypeViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do view setup here.
         
         services = ServiceManager.sharedManager.services
     }

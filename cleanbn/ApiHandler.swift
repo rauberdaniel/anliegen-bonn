@@ -116,7 +116,6 @@ class ApiHandler: NSObject {
     }
     
     func submitConcernForm(concern: Concern, completionHandler: (response: NSURLResponse!, data: NSData!, error: NSError!) -> Void) {
-        
         let url = NSURL(string: "http://cleanbn.danielrauber.de/final.php")
         
         let data = concern.getFormData()
@@ -134,10 +133,24 @@ class ApiHandler: NSObject {
     }
     
     func uploadImage(concern: Concern, completionHandler: (imageUrl: NSURL?) -> Void) {
+        let url = NSURL(string: "http://cleanbn.danielrauber.de/image.php")
         if let imageData = concern.getImageData() {
             let base64ImageString = imageData.base64EncodedStringWithOptions(.allZeros)
+            let base64ImageData = base64ImageString.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)
             // Create and Send Request, call completionhandler with returned url
-            completionHandler(imageUrl: NSURL(string: "http://placehold.it/200"))
+            var request = NSMutableURLRequest(URL: url!)
+            request.setValue("image/jpeg", forHTTPHeaderField: "Content-Type")
+            request.setValue("\(base64ImageData?.length)", forHTTPHeaderField: "Content-Length")
+            request.HTTPMethod = "POST"
+            request.HTTPBody = base64ImageData
+            NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue(), completionHandler: { (response, data, error) -> Void in
+                if let imageUrlString = NSString(data: data, encoding: NSUTF8StringEncoding) as? String, imageUrl = NSURL(string: imageUrlString) {
+                    println("ApiHandler :: Image uploaded :: \(imageUrl)")
+                    completionHandler(imageUrl: imageUrl)
+                } else {
+                    println("ApiHandler :: Image upload failed :: \(error.localizedDescription)")
+                }
+            })
         } else {
             completionHandler(imageUrl: nil)
         }
