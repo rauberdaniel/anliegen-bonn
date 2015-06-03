@@ -239,10 +239,10 @@
 			};
 			buildConfigurationList = 658F18FC1AE0E66B007DB575 /* Build configuration list for PBXProject "cleanbn" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = German;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				en,
+				de,
 				Base,
 			);
 			mainGroup = 658F18F81AE0E66B007DB575;
