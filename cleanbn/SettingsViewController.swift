@@ -86,7 +86,7 @@ class SettingsViewController: UITableViewController {
         if indexPath.section == 0 {
             let cell = tableView.dequeueReusableCellWithIdentifier("MailCell") as! UITableViewCell
             
-            if let mail = NSUserDefaults.standardUserDefaults().objectForKey("email") as? String {
+            if let mail = NSUserDefaults.standardUserDefaults().stringForKey("email") {
                 (cell.viewWithTag(2) as! UITextField).text = mail
             }
             return cell

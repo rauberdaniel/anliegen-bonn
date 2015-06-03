@@ -44,9 +44,7 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
         super.viewDidLoad()
         // Do view setup here.
         
-        //let cancelButton = UIBarButtonItem(barButtonSystemItem: .Cancel, target: self, action: "cancel:")
-        //self.navigationItem.leftBarButtonItem = cancelButton
-        tableView.keyboardDismissMode = UIScrollViewKeyboardDismissMode.OnDrag
+        tableView.keyboardDismissMode = .OnDrag
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardWillShow:", name: UIKeyboardWillShowNotification, object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardDidHide:", name: UIKeyboardDidHideNotification, object: nil)
@@ -82,8 +80,9 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
     }
     
     func checkSettings() -> Bool {
-        if let mail = NSUserDefaults.standardUserDefaults().objectForKey("email") as? String {
-            if ValidationHandler.isValidEmail(mail) {
+        let userDefaults = NSUserDefaults.standardUserDefaults()
+        if let mail = userDefaults.stringForKey("email") {
+            if ValidationHandler.isValidEmail(mail) && userDefaults.boolForKey("termsAccepted") {
                 return true
             }
         }

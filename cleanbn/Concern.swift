@@ -97,7 +97,7 @@ class Concern: NSObject, CLLocationManagerDelegate {
         dict["long"] = location?.coordinate.longitude
         dict["address"] = locationName
         dict["description"] = desc
-        if let mail = NSUserDefaults.standardUserDefaults().objectForKey("email") as? String {
+        if let mail = NSUserDefaults.standardUserDefaults().stringForKey("email") {
             dict["email"] = mail
         }
         
@@ -112,7 +112,7 @@ class Concern: NSObject, CLLocationManagerDelegate {
     }
     
     func getFormString() -> String? {
-        if let mail = NSUserDefaults.standardUserDefaults().objectForKey("email") as? String, lat = location?.coordinate.latitude, long = location?.coordinate.longitude {
+        if let mail = NSUserDefaults.standardUserDefaults().stringForKey("email"), lat = location?.coordinate.latitude, long = location?.coordinate.longitude {
             var string = "service_code=\(service.code)&lat=\(lat)&long=\(long)&description=\(desc)&email=\(mail)"
             if let mediaUrl = imageUrl, mediaUrlString = mediaUrl.absoluteString {
                 string += "&media_url=\(mediaUrlString)"

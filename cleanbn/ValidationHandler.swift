@@ -12,14 +12,14 @@ import CoreLocation
 class ValidationHandler: NSObject {
        
     class func isValidEmail(testStr: String) -> Bool {
-        let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}"
+        let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,10}"
         
         let emailTest = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
         return emailTest.evaluateWithObject(testStr)
     }
     
     class func isValidLocation(location: CLLocation?) -> Bool {
-        if location?.coordinate.latitude > 50 && location?.coordinate.latitude < 51 && location?.coordinate.longitude > 6.5 && location?.coordinate.longitude < 8 {
+        if location?.coordinate.latitude > 50.63 && location?.coordinate.latitude < 59.78 && location?.coordinate.longitude > 7.01 && location?.coordinate.longitude < 7.22 {
             return true
         }
         return false
