@@ -24,6 +24,7 @@
 		658F19291AE0E767007DB575 /* Concern.swift in Sources */ = {isa = PBXBuildFile; fileRef = 658F19281AE0E767007DB575 /* Concern.swift */; };
 		658F192B1AE0E814007DB575 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 658F192A1AE0E814007DB575 /* MapKit.framework */; };
 		658F192D1AE0E81A007DB575 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 658F192C1AE0E81A007DB575 /* CoreLocation.framework */; };
+		65B66F361B1EFB1500ECE8B8 /* AuthenticationHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65B66F351B1EFB1500ECE8B8 /* AuthenticationHandler.swift */; };
 		65C2A5DB1AE972EE007AFEC9 /* LocationSelectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65C2A5DA1AE972EE007AFEC9 /* LocationSelectionViewController.swift */; };
 		65E5B2D51AE137BF00DD4042 /* NSDateISO8601.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65E5B2D41AE137BF00DD4042 /* NSDateISO8601.swift */; };
 /* End PBXBuildFile section */
@@ -60,6 +61,7 @@
 		658F19281AE0E767007DB575 /* Concern.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Concern.swift; sourceTree = "<group>"; };
 		658F192A1AE0E814007DB575 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		658F192C1AE0E81A007DB575 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		65B66F351B1EFB1500ECE8B8 /* AuthenticationHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthenticationHandler.swift; sourceTree = "<group>"; };
 		65C2A5DA1AE972EE007AFEC9 /* LocationSelectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationSelectionViewController.swift; sourceTree = "<group>"; };
 		65E5B2D41AE137BF00DD4042 /* NSDateISO8601.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSDateISO8601.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -137,6 +139,7 @@
 				656840211AE3067C008A8D31 /* AddViewController.swift */,
 				6568401F1AE2F326008A8D31 /* ApiHandler.swift */,
 				656840221AE3067C008A8D31 /* AppDelegate.swift */,
+				65B66F351B1EFB1500ECE8B8 /* AuthenticationHandler.swift */,
 				658F19281AE0E767007DB575 /* Concern.swift */,
 				654536411AE2BB9C007C0A1E /* ConcernTypeViewController.swift */,
 				65C2A5DA1AE972EE007AFEC9 /* LocationSelectionViewController.swift */,
@@ -286,6 +289,7 @@
 				658CB5051AECE91A00C6077E /* AddressManager.swift in Sources */,
 				654536451AE2C8D4007C0A1E /* ServiceManager.swift in Sources */,
 				654536471AE2C9C8007C0A1E /* Service.swift in Sources */,
+				65B66F361B1EFB1500ECE8B8 /* AuthenticationHandler.swift in Sources */,
 				65448A401B00E83D00C45B0B /* SettingsViewController.swift in Sources */,
 				656840201AE2F326008A8D31 /* ApiHandler.swift in Sources */,
 				65C2A5DB1AE972EE007AFEC9 /* LocationSelectionViewController.swift in Sources */,

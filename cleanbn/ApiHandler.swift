@@ -66,24 +66,6 @@ class ApiHandler: NSObject {
         return output
     }
     
-    /*
-    func submitConcernAsJSON(concern: Concern, completionHandler: (response: NSURLResponse!, data: NSData!, error: NSError!) -> Void) {
-        let url = NSURL(string: "http://cleanbn.danielrauber.de/submit.php")
-        
-        let data = concern.getJSONData()
-        
-        if let data = data {
-            var request = NSMutableURLRequest(URL: url!)
-            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-            request.HTTPMethod = "POST"
-            request.HTTPBody = data
-            NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue(), completionHandler: completionHandler)
-        } else {
-            println("No Concern given")
-        }
-    }
-    */
-    
     func submitConcern(concern: Concern, sender: AddViewController) {
         
         let progressAlert = UIAlertController(title: "Anliegen wird übermittelt…", message: "Bitte hab einen Moment Geduld, während dein Anliegen übermittelt wird.", preferredStyle: .Alert)
@@ -95,6 +77,7 @@ class ApiHandler: NSObject {
             concern.imageUrl = imageUrl
             self.submitConcernForm(concern, completionHandler: { (response, data, error) -> Void in
                 if error != nil {
+                    println("ApiHandler :: SubmitConcernForm :: Error :: \(NSString(data: data, encoding: NSUTF8StringEncoding))")
                     sender.sendButton.enabled = true
                     let errorAlert = UIAlertController(title: "Fehler", message: "Dein Anliegen konnte nicht übermittelt werden. Bitte verbinde dich mit dem Internet, um dein Anliegen zu senden.", preferredStyle: .Alert)
                     errorAlert.addAction(closeAction)
@@ -116,19 +99,25 @@ class ApiHandler: NSObject {
     }
     
     func submitConcernForm(concern: Concern, completionHandler: (response: NSURLResponse!, data: NSData!, error: NSError!) -> Void) {
-        let url = NSURL(string: "http://cleanbn.danielrauber.de/final.php")
+        let url = NSURL(string: "http://anliegen.bonn.de/georeport/v2/requests.json")
         
-        let data = concern.getFormData()
+        var formString = concern.getFormString()
         
-        if let data = data {
-            var request = NSMutableURLRequest(URL: url!)
-            request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-            request.setValue("\(data.length)", forHTTPHeaderField: "Content-Length")
-            request.HTTPMethod = "POST"
-            request.HTTPBody = data
-            NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue(), completionHandler: completionHandler)
+        if let formString = formString {
+            let dataString = AuthenticationHandler.sharedHandler.getAuthenticatedDataString(formString)
+            let data = dataString.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)
+            if let data = data {
+                var request = NSMutableURLRequest(URL: url!)
+                request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+                request.setValue("\(data.length)", forHTTPHeaderField: "Content-Length")
+                request.HTTPMethod = "POST"
+                request.HTTPBody = data
+                NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue(), completionHandler: completionHandler)
+            } else {
+                println("ApiHandler :: Data Encoding failed")
+            }
         } else {
-            println("No Concern given")
+            println("ApiHandler :: No FormString given")
         }
     }
     

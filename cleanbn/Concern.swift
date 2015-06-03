@@ -111,15 +111,16 @@ class Concern: NSObject, CLLocationManagerDelegate {
         return data
     }
     
-    func getFormData() -> NSData? {
+    func getFormString() -> String? {
         if let mail = NSUserDefaults.standardUserDefaults().objectForKey("email") as? String, lat = location?.coordinate.latitude, long = location?.coordinate.longitude {
             var string = "service_code=\(service.code)&lat=\(lat)&long=\(long)&description=\(desc)&email=\(mail)"
             if let mediaUrl = imageUrl, mediaUrlString = mediaUrl.absoluteString {
                 string += "&media_url=\(mediaUrlString)"
             }
-            return string.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)
+            println("Concern :: Form Data :: \(string)")
+            return string
         } else {
-            println("Concern :: Form Encoding Failed")
+            println("Concern :: Mail or Location missing")
         }
         return nil
     }
