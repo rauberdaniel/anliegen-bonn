@@ -34,6 +34,7 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
         setupView()
         
         mapView.delegate = self
+        mapView.rotateEnabled = false
         
         // Add Settings Button
         let settingsIcon = UIImage(named: "SettingsIcon")
@@ -56,16 +57,32 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
         locationManager.delegate = self
         locationManager.requestWhenInUseAuthorization()
         
+        // Disable UserLocation Button when UserLocation is denied
+        userLocationButton.enabled = false
+        if CLLocationManager.authorizationStatus() == .AuthorizedWhenInUse {
+            // UserLocation is allowed
+            userLocationButton.enabled = true
+        }
+        
         streetLabel.text = "Lokalisiere…"
-        userLocationButton.selected = true
         
         if location != nil {
             // location is already set
             customLocation = true
         } else {
+            // set start location to Kennedybrücke
             customLocation = false
+            let startCenter = CLLocation(latitude: 50.7387291883506, longitude: 7.11030880026633)
+            let span = MKCoordinateSpanMake(0.0096, 0.0096)
+            let region: MKCoordinateRegion = MKCoordinateRegionMake(startCenter.coordinate, span)
+            mapView.setRegion(region, animated: animateToNewLocation)
+            
+            // use UserLocation if available
+            if CLLocationManager.authorizationStatus() == .AuthorizedWhenInUse {
+                userLocationButton.selected = true
+                startMonitoringLocation()
+            }
         }
-        startMonitoringLocation()
     }
     
     func setupView() {
@@ -126,6 +143,7 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
                         return
                     }
                     let street = AddressManager.sharedManager.getAddressStringFromPlacemark(placemark, includeLocality: false)
+                    println("Geocoder :: Returned :: \(street)")
                     self.streetLabel.text = street
                 }
             })
@@ -143,6 +161,10 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
     func locationManager(manager: CLLocationManager!, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
         if status == .AuthorizedWhenInUse || status == .AuthorizedAlways {
             // permission granted
+            startMonitoringLocation()
+            userLocationButton.enabled = true
+        } else {
+            userLocationButton.enabled = false
         }
     }
     
@@ -157,6 +179,17 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
                     moveToLocation(newLocation)
                 }
             }
+        }
+    }
+    
+    func locationManager(manager: CLLocationManager!, didFailWithError error: NSError!) {
+        println("LocationManager :: DidFail")
+        if error.code == CLError.Denied.rawValue {
+            // Location Services are not allowed
+            locationManager.stopUpdatingLocation()
+            userLocationButton.enabled = false
+            userLocationButton.selected = false
+            println("LocationManager :: Denied")
         }
     }
     

@@ -12,12 +12,16 @@ import UIKit
 private let _ApiHandlerInstance = ApiHandler()
 
 class ApiHandler: NSObject {
+    
+    let baseUrl = "http://anliegen.bonn.de/georeport/v2/"
+    let imageUrl = "http://cleanbn.danielrauber.de/image.php"
+    
     class var sharedHandler: ApiHandler {
         return _ApiHandlerInstance
     }
     
     func getServices(completionHandler: ([Service]) -> Void) {
-        let url = NSURL(string: "http://anliegen.bonn.de/georeport/v2/services.json")
+        let url = NSURL(string: baseUrl+"services.json")
         let request = NSURLRequest(URL: url!, cachePolicy: NSURLRequestCachePolicy.ReloadIgnoringLocalCacheData, timeoutInterval: 10)
         NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue(), completionHandler: { (response, data, error) -> Void in
             if error == nil {
@@ -45,7 +49,7 @@ class ApiHandler: NSObject {
     }
     
     func getConcerns(completionHandler: ([Concern]) -> Void) {
-        let url = NSURL(string: "http://anliegen.bonn.de/georeport/v2/requests.json")
+        let url = NSURL(string: baseUrl+"requests.json")
         let request = NSURLRequest(URL: url!)
         NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue(), completionHandler: { (response, data, error) -> Void in
             let concerns = self.parseConcerns(data)
@@ -66,8 +70,10 @@ class ApiHandler: NSObject {
         return output
     }
     
+    /**
+        Submits a concern by uploading a potential image and sending the concern data to the API
+    */
     func submitConcern(concern: Concern, sender: AddViewController) {
-        
         let progressAlert = UIAlertController(title: "Anliegen wird übermittelt…", message: "Bitte hab einen Moment Geduld, während dein Anliegen übermittelt wird.", preferredStyle: .Alert)
         sender.presentViewController(progressAlert, animated: true, completion: nil)
         
@@ -98,8 +104,11 @@ class ApiHandler: NSObject {
         })
     }
     
+    /**
+        Submits the concern data to the API
+    */
     func submitConcernForm(concern: Concern, completionHandler: (response: NSURLResponse!, data: NSData!, error: NSError!) -> Void) {
-        let url = NSURL(string: "http://anliegen.bonn.de/georeport/v2/requests.json")
+        let url = NSURL(string: baseUrl+"/georeport/v2/requests.json")
         
         var formString = concern.getFormString()
         
@@ -121,8 +130,11 @@ class ApiHandler: NSObject {
         }
     }
     
+    /**
+        Uploads the potential image of a concern to a separate server
+    */
     func uploadImage(concern: Concern, completionHandler: (imageUrl: NSURL?) -> Void) {
-        let url = NSURL(string: "http://cleanbn.danielrauber.de/image.php")
+        let url = NSURL(string: imageUrl)
         if let imageData = concern.getImageData() {
             let base64ImageString = imageData.base64EncodedStringWithOptions(.allZeros)
             let base64ImageData = base64ImageString.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)

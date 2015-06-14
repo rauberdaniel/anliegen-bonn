@@ -19,10 +19,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         let userDefaults: [NSObject : AnyObject] = [
             "email": "",
-            "termsAccepted": false
+            "termsAccepted": false,
+            "requestsSent": []
         ]
         NSUserDefaults.standardUserDefaults().registerDefaults(userDefaults)
-        ServiceManager.sharedManager
         
         return true
     }
