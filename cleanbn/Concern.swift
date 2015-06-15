@@ -13,6 +13,7 @@ import CoreGraphics
 
 class Concern: NSObject, CLLocationManagerDelegate {
     
+    var id: String?
     var dateReported: NSDate?
     var locationName: String?
     var location: CLLocation? {
@@ -31,6 +32,9 @@ class Concern: NSObject, CLLocationManagerDelegate {
     }
     
     init(fromDictionary dict: NSDictionary) {
+        if let id = dict["service_request_id"] as? String {
+            self.id = id
+        }
         if let reportedString = dict["requested_datetime"] as? String {
             if let date = NSDate.dateFromISOString(reportedString) {
                 dateReported = date

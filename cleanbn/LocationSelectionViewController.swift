@@ -31,8 +31,6 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
     var animateToNewLocation: Bool = false // initially false, true after first location
     
     override func viewDidLoad() {
-        setupView()
-        
         mapView.delegate = self
         mapView.rotateEnabled = false
         
@@ -40,6 +38,10 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
         let settingsIcon = UIImage(named: "SettingsIcon")
         let settingsButton = UIBarButtonItem(image: settingsIcon, style: .Plain, target: self, action: "showSettings:")
         self.navigationItem.leftBarButtonItem = settingsButton
+        
+        // Add Library Button
+        let libraryButton = UIBarButtonItem(barButtonSystemItem: .Bookmarks, target: self, action: "showLibrary:")
+        self.navigationItem.rightBarButtonItem = libraryButton
         
         // Add Gesture Recognizers
         let panRecognizer = UIPanGestureRecognizer(target: self, action: "handlePan:")
@@ -72,43 +74,18 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
         } else {
             // set start location to Kennedybrücke
             customLocation = false
-            let startCenter = CLLocation(latitude: 50.7387291883506, longitude: 7.11030880026633)
-            let span = MKCoordinateSpanMake(0.0096, 0.0096)
-            let region: MKCoordinateRegion = MKCoordinateRegionMake(startCenter.coordinate, span)
-            mapView.setRegion(region, animated: animateToNewLocation)
             
             // use UserLocation if available
             if CLLocationManager.authorizationStatus() == .AuthorizedWhenInUse {
                 userLocationButton.selected = true
                 startMonitoringLocation()
+            } else {
+                // Reverse Geocode start location
+                let startCenter = CLLocation(latitude: 50.7387291883506, longitude: 7.11030880026633)
+                let span = MKCoordinateSpanMake(0.0096, 0.0096)
+                let region: MKCoordinateRegion = MKCoordinateRegionMake(startCenter.coordinate, span)
+                mapView.setRegion(region, animated: animateToNewLocation)
             }
-        }
-    }
-    
-    func setupView() {
-        continueButton.layer.cornerRadius = 5
-        continueButton.clipsToBounds = true
-        continueButton.layer.borderWidth = 0.5
-        continueButton.layer.borderColor = UIColor(white: 0.2, alpha: 0.4).CGColor
-        
-        streetView.layer.cornerRadius = continueButton.layer.cornerRadius
-        streetView.clipsToBounds = true
-        streetView.layer.borderWidth = continueButton.layer.borderWidth
-        streetView.layer.borderColor = continueButton.layer.borderColor
-    }
-    
-    func showSettings(sender: AnyObject) {
-        self.performSegueWithIdentifier("showSettings", sender: self)
-    }
-    
-    func handlePan(sender: UIGestureRecognizer) {
-        customLocation = true
-        userLocationButton.selected = false
-        if sender.state == UIGestureRecognizerState.Began {
-            //updateLocationName()
-        }
-        if sender.state == UIGestureRecognizerState.Ended {
-            //updateLocationName()
         }
     }
     
@@ -148,6 +125,27 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
                 }
             })
         }
+    }
+    
+    func handlePan(sender: UIGestureRecognizer) {
+        customLocation = true
+        userLocationButton.selected = false
+        if sender.state == UIGestureRecognizerState.Began {
+            //updateLocationName()
+        }
+        if sender.state == UIGestureRecognizerState.Ended {
+            //updateLocationName()
+        }
+    }
+    
+    // MARK: - Navigation
+    
+    func showSettings(sender: AnyObject) {
+        self.performSegueWithIdentifier("showSettings", sender: self)
+    }
+    
+    func showLibrary(sender: AnyObject) {
+        self.performSegueWithIdentifier("showLibrary", sender: self)
     }
     
     // MARK: - GestureRecognizerDelegate

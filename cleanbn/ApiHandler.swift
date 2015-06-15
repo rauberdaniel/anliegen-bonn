@@ -82,24 +82,32 @@ class ApiHandler: NSObject {
         uploadImage(concern, completionHandler: { (imageUrl) -> Void in
             concern.imageUrl = imageUrl
             self.submitConcernForm(concern, completionHandler: { (response, data, error) -> Void in
-                if error != nil {
-                    println("ApiHandler :: SubmitConcernForm :: Error :: \(NSString(data: data, encoding: NSUTF8StringEncoding))")
+                if error == nil {
+                    var jsonError: NSErrorPointer = nil
+                    if let jsonData = NSJSONSerialization.JSONObjectWithData(data, options: .MutableLeaves, error: jsonError) as? Array<AnyObject>, jsonDict = jsonData[0] as? Dictionary<String,String>, requestID = jsonDict["service_request_id"] {
+                        // requestID like "A-4523"
+                        NSUserDefaults.standardUserDefaults().mutableArrayValueForKey("requestsSent").addObject(requestID)
+                        println("ApiHandler :: SubmitConcernForm :: Submitted :: \(requestID)")
+                        
+                        let successAlert = UIAlertController(title: "Anliegen übermittelt", message: "Dein Anliegen wurde erfolgreich übermittelt und wird zeitnah bearbeitet.", preferredStyle: UIAlertControllerStyle.Alert)
+                        let closeAndBackAction = UIAlertAction(title: "Ok", style: .Cancel, handler: { (action) -> Void in
+                            sender.navigationController?.popViewControllerAnimated(true)
+                        })
+                        successAlert.addAction(closeAndBackAction)
+                        progressAlert.dismissViewControllerAnimated(true, completion: { () -> Void in
+                            sender.presentViewController(successAlert, animated: true, completion: nil)
+                        })
+                    }
+                } else {
+                    // Connection Error
+                    println("ApiHandler :: SubmitConcernForm :: Error :: \(error.localizedDescription) :: \(NSString(data: data, encoding: NSUTF8StringEncoding))")
                     sender.sendButton.enabled = true
                     let errorAlert = UIAlertController(title: "Fehler", message: "Dein Anliegen konnte nicht übermittelt werden. Bitte verbinde dich mit dem Internet, um dein Anliegen zu senden.", preferredStyle: .Alert)
                     errorAlert.addAction(closeAction)
                     progressAlert.dismissViewControllerAnimated(true, completion: { () -> Void in
                         sender.presentViewController(errorAlert, animated: true, completion: nil)
                     })
-                    return
                 }
-                let successAlert = UIAlertController(title: "Anliegen übermittelt", message: "Dein Anliegen wurde erfolgreich übermittelt und wird zeitnah bearbeitet.", preferredStyle: UIAlertControllerStyle.Alert)
-                let closeAndBackAction = UIAlertAction(title: "Ok", style: .Cancel, handler: { (action) -> Void in
-                    sender.navigationController?.popViewControllerAnimated(true)
-                })
-                successAlert.addAction(closeAndBackAction)
-                progressAlert.dismissViewControllerAnimated(true, completion: { () -> Void in
-                    sender.presentViewController(successAlert, animated: true, completion: nil)
-                })
             })
         })
     }
@@ -107,8 +115,8 @@ class ApiHandler: NSObject {
     /**
         Submits the concern data to the API
     */
-    func submitConcernForm(concern: Concern, completionHandler: (response: NSURLResponse!, data: NSData!, error: NSError!) -> Void) {
-        let url = NSURL(string: baseUrl+"/georeport/v2/requests.json")
+    private func submitConcernForm(concern: Concern, completionHandler: (response: NSURLResponse!, data: NSData!, error: NSError!) -> Void) {
+        let url = NSURL(string: baseUrl+"requests.json")
         
         var formString = concern.getFormString()
         
@@ -133,7 +141,7 @@ class ApiHandler: NSObject {
     /**
         Uploads the potential image of a concern to a separate server
     */
-    func uploadImage(concern: Concern, completionHandler: (imageUrl: NSURL?) -> Void) {
+    private func uploadImage(concern: Concern, completionHandler: (imageUrl: NSURL?) -> Void) {
         let url = NSURL(string: imageUrl)
         if let imageData = concern.getImageData() {
             let base64ImageString = imageData.base64EncodedStringWithOptions(.allZeros)

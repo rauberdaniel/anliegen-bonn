@@ -191,7 +191,7 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
     }
     
     func attachPhoto(sender: AnyObject) {
-        let alert = UIAlertController(title: "Foto auswählen", message: "Aus welcher Quelle möchtest du ein Foto hinzufügen?", preferredStyle: UIAlertControllerStyle.ActionSheet)
+        let alert = UIAlertController(title: "Foto hinzufügen", message: "Aus welcher Quelle möchtest du ein Foto hinzufügen?", preferredStyle: .ActionSheet)
         if UIImagePickerController.isSourceTypeAvailable(.Camera) {
             let captureAction = UIAlertAction(title: "Kamera", style: .Default) { (action) -> Void in
                 self.selectPhoto(.Camera)
