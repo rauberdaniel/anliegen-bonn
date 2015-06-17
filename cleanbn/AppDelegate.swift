@@ -15,14 +15,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-        // Override point for customization after application launch.
-        
         let userDefaults: [NSObject : AnyObject] = [
             "email": "",
             "termsAccepted": false,
             "requestsSent": []
         ]
         NSUserDefaults.standardUserDefaults().registerDefaults(userDefaults)
+        
+        if let font = UIFont(name: "AvenirNext-DemiBold", size: 18) {
+            UINavigationBar.appearance().titleTextAttributes = [NSFontAttributeName: font]
+        }
+        
+        // update the list of cached services
+        ServiceManager.sharedManager.updateServices()
         
         return true
     }

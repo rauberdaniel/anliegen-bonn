@@ -16,7 +16,9 @@ class ConcernTypeViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        services = ServiceManager.sharedManager.services
+        services = ServiceManager.sharedManager.getServices()
+        
+        self.title = "Kategorie"
     }
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {

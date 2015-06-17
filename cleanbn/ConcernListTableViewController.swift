@@ -11,6 +11,7 @@ import UIKit
 class ConcernListTableViewController: UITableViewController {
     
     var concerns: [Concern]? = nil
+    var ownConcerns: [String] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,7 +23,12 @@ class ConcernListTableViewController: UITableViewController {
 
         self.tableView.rowHeight = 60
         
+        if let requestsSent = NSUserDefaults.standardUserDefaults().arrayForKey("requestsSent") as? [String] {
+            ownConcerns = requestsSent
+        }
+        
         ApiHandler.sharedHandler.getConcerns { (concerns) -> Void in
+            println("ConcernList :: ReceivedConcerns :: \(concerns.count)")
             self.concerns = concerns
             self.tableView.reloadData()
         }
@@ -74,12 +80,26 @@ class ConcernListTableViewController: UITableViewController {
         // Configure the cell...
         if let concerns = concerns {
             let concern = concerns[indexPath.row]
-            if let id = concern.id, locationName = concern.locationName, date = concern.dateReported {
+            if let id = concern.id, date = concern.dateReported {
+                if contains(ownConcerns, id) {
+                    // this request was sent by the user
+                    cell.imageView?.backgroundColor = UIColor(white: 0.9, alpha: 1)
+                } else {
+                    cell.imageView?.backgroundColor = nil
+                }
                 let shortDateString = NSDate.shortStringFromDate(date)
                 cell.textLabel?.text = "\(id) – \(concern.service.name)"
-                cell.detailTextLabel?.text = "\(shortDateString) — \(locationName)"
+                var detailString = "\(shortDateString)"
+                if let locationName = concern.locationName {
+                    detailString = "\(detailString) — \(locationName)"
+                }
+                cell.detailTextLabel?.text = detailString
             } else {
-                cell.detailTextLabel?.text = ""
+                if let id = concern.id {
+                    cell.detailTextLabel?.text = "\(id)"
+                } else {
+                    cell.detailTextLabel?.text = "Unbekanntes Anliegen"
+                }
             }
             cell.imageView?.image = UIImage(named: "StateOpen")
             if concern.state == "closed" {

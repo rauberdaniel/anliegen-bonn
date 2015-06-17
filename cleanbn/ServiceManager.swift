@@ -15,12 +15,6 @@ class ServiceManager: NSObject {
         return _ServiceManagerInstance
     }
     
-    var services: [Service] {
-        get {
-            return getServices()
-        }
-    }
-    
     override init() {
         super.init()
         updateServices()

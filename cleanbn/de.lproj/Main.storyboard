@@ -58,7 +58,8 @@
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="44" id="wEs-BX-2eQ"/>
                                             </constraints>
-                                            <fontDescription key="fontDescription" name="DINAlternate-Bold" family="DIN Alternate" pointSize="18"/>
+                                            <fontDescription key="fontDescription" name="AvenirNext-Medium" family="Avenir Next" pointSize="18"/>
+                                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="0.80000000000000004" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RzF-Rd-cJ8">
@@ -106,7 +107,7 @@
                                 <constraints>
                                     <constraint firstAttribute="height" constant="60" id="Mlu-bC-eyv"/>
                                 </constraints>
-                                <blurEffect style="light"/>
+                                <blurEffect style="extraLight"/>
                             </visualEffectView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -157,13 +158,13 @@
                         <sections>
                             <tableViewSection id="WRc-en-cxm">
                                 <cells>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" rowHeight="200" id="X1T-92-gUC">
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" rowHeight="180" id="X1T-92-gUC">
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="X1T-92-gUC" id="uxz-38-Fgd">
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" zoomEnabled="NO" scrollEnabled="NO" rotateEnabled="NO" pitchEnabled="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aVI-ow-1bB">
-                                                    <rect key="frame" x="0.0" y="0.0" width="375" height="199"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="375" height="179.5"/>
                                                 </mapView>
                                             </subviews>
                                             <constraints>
@@ -315,10 +316,10 @@
         <scene sceneID="aBR-vV-dDw">
             <objects>
                 <tableViewController id="CJ1-O5-1OQ" customClass="ConcernTypeViewController" customModule="cleanbn" customModuleProvider="target" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" id="UvQ-6b-Xiq">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="UvQ-6b-Xiq">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" red="0.93725490196078431" green="0.93725490196078431" blue="0.95686274509803926" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" textLabel="KTB-Yd-cGT" rowHeight="50" style="IBUITableViewCellStyleDefault" id="KKx-U8-3pd">
                                 <autoresizingMask key="autoresizingMask"/>
@@ -536,7 +537,7 @@
         <image name="UserLocate Inactive" width="30" height="30"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="N2a-ri-ttO"/>
+        <segue reference="ZKQ-kK-hXr"/>
     </inferredMetricsTieBreakers>
     <color key="tintColor" red="0.80526703596115112" green="0.028064688667654991" blue="0.10187920182943344" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
 </document>

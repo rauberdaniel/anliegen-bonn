@@ -79,9 +79,9 @@ class ApiHandler: NSObject {
         
         let closeAction = UIAlertAction(title: "Ok", style: .Cancel, handler: nil)
         
-        uploadImage(concern, completionHandler: { (imageUrl) -> Void in
+        uploadImage(concern, sender: sender, completionHandler: { (imageUrl) -> Void in
             concern.imageUrl = imageUrl
-            self.submitConcernForm(concern, completionHandler: { (response, data, error) -> Void in
+            self.submitConcernForm(concern, completionHandler: { (data, response, error) -> Void in
                 if error == nil {
                     var jsonError: NSErrorPointer = nil
                     if let jsonData = NSJSONSerialization.JSONObjectWithData(data, options: .MutableLeaves, error: jsonError) as? Array<AnyObject>, jsonDict = jsonData[0] as? Dictionary<String,String>, requestID = jsonDict["service_request_id"] {
@@ -115,7 +115,7 @@ class ApiHandler: NSObject {
     /**
         Submits the concern data to the API
     */
-    private func submitConcernForm(concern: Concern, completionHandler: (response: NSURLResponse!, data: NSData!, error: NSError!) -> Void) {
+    private func submitConcernForm(concern: Concern, completionHandler: (data: NSData!, response: NSURLResponse!, error: NSError!) -> Void) {
         let url = NSURL(string: baseUrl+"requests.json")
         
         var formString = concern.getFormString()
@@ -128,8 +128,8 @@ class ApiHandler: NSObject {
                 request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
                 request.setValue("\(data.length)", forHTTPHeaderField: "Content-Length")
                 request.HTTPMethod = "POST"
-                request.HTTPBody = data
-                NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue(), completionHandler: completionHandler)
+                
+                NSURLSession.sharedSession().uploadTaskWithRequest(request, fromData: data, completionHandler: completionHandler)
             } else {
                 println("ApiHandler :: Data Encoding failed")
             }
@@ -141,7 +141,7 @@ class ApiHandler: NSObject {
     /**
         Uploads the potential image of a concern to a separate server
     */
-    private func uploadImage(concern: Concern, completionHandler: (imageUrl: NSURL?) -> Void) {
+    private func uploadImage(concern: Concern, sender: AddViewController, completionHandler: (imageUrl: NSURL?) -> Void) {
         let url = NSURL(string: imageUrl)
         if let imageData = concern.getImageData() {
             let base64ImageString = imageData.base64EncodedStringWithOptions(.allZeros)
@@ -151,13 +151,16 @@ class ApiHandler: NSObject {
             request.setValue("image/jpeg", forHTTPHeaderField: "Content-Type")
             request.setValue("\(base64ImageData?.length)", forHTTPHeaderField: "Content-Length")
             request.HTTPMethod = "POST"
-            request.HTTPBody = base64ImageData
-            NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue(), completionHandler: { (response, data, error) -> Void in
+            
+            NSURLSession.sharedSession().uploadTaskWithRequest(request, fromData: base64ImageData, completionHandler: { (data, response, error) -> Void in
                 if let imageUrlString = NSString(data: data, encoding: NSUTF8StringEncoding) as? String, imageUrl = NSURL(string: imageUrlString) {
                     println("ApiHandler :: Image uploaded :: \(imageUrl)")
                     completionHandler(imageUrl: imageUrl)
                 } else {
                     println("ApiHandler :: Image upload failed :: \(error.localizedDescription)")
+                    let alert = UIAlertController(title: "Fehler", message: "Das Foto konnte nicht übertragen werden. Bitte versuche es später erneut.", preferredStyle: .Alert)
+                    alert.addAction(UIAlertAction(title: "Ok", style: .Cancel, handler: nil))
+                    sender.presentViewController(alert, animated: true, completion: nil)
                 }
             })
         } else {

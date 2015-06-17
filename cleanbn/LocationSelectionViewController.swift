@@ -59,6 +59,8 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
         locationManager.delegate = self
         locationManager.requestWhenInUseAuthorization()
         
+        showRequestsOnMap()
+        
         // Disable UserLocation Button when UserLocation is denied
         userLocationButton.enabled = false
         if CLLocationManager.authorizationStatus() == .AuthorizedWhenInUse {
@@ -87,11 +89,6 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
                 mapView.setRegion(region, animated: animateToNewLocation)
             }
         }
-    }
-    
-    func handleTap(sender: UIGestureRecognizer) {
-        customLocation = true
-        userLocationButton.selected = false
     }
     
     func updateLocationName() {
@@ -127,6 +124,13 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
         }
     }
     
+    // MARK: - Gesture Handling
+    
+    func handleTap(sender: UIGestureRecognizer) {
+        customLocation = true
+        userLocationButton.selected = false
+    }
+    
     func handlePan(sender: UIGestureRecognizer) {
         customLocation = true
         userLocationButton.selected = false
@@ -138,6 +142,10 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
         }
     }
     
+    func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWithGestureRecognizer otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        return true
+    }
+    
     // MARK: - Navigation
     
     func showSettings(sender: AnyObject) {
@@ -146,12 +154,6 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
     
     func showLibrary(sender: AnyObject) {
         self.performSegueWithIdentifier("showLibrary", sender: self)
-    }
-    
-    // MARK: - GestureRecognizerDelegate
-    
-    func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWithGestureRecognizer otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        return true
     }
     
     // MARK: - LocationManagerDelegate
@@ -233,6 +235,24 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
         let region: MKCoordinateRegion = MKCoordinateRegionMake(location.coordinate, span)
         mapView.setRegion(region, animated: animateToNewLocation)
         animateToNewLocation = true
+    }
+    
+    func concernStateOpen(concern: Concern) -> Bool {
+        return concern.state == "open"
+    }
+    
+    func showRequestsOnMap() {
+        ApiHandler.sharedHandler.getConcerns { (concerns) -> Void in
+            for concern in concerns.filter(self.concernStateOpen) {
+                if let coordinate = concern.location?.coordinate {
+                    let pin = MKPointAnnotation()
+                    pin.coordinate = coordinate
+                    pin.title = concern.service.name
+                    pin.subtitle = concern.desc
+                    self.mapView.addAnnotation(pin)
+                }
+            }
+        }
     }
     
     // MARK: - Seagues
