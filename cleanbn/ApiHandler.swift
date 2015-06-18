@@ -128,8 +128,10 @@ class ApiHandler: NSObject {
                 request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
                 request.setValue("\(data.length)", forHTTPHeaderField: "Content-Length")
                 request.HTTPMethod = "POST"
+                request.HTTPBody = data
                 
-                NSURLSession.sharedSession().uploadTaskWithRequest(request, fromData: data, completionHandler: completionHandler)
+                let dataTask = NSURLSession.sharedSession().dataTaskWithRequest(request, completionHandler: completionHandler)
+                dataTask.resume()
             } else {
                 println("ApiHandler :: Data Encoding failed")
             }
@@ -151,8 +153,11 @@ class ApiHandler: NSObject {
             request.setValue("image/jpeg", forHTTPHeaderField: "Content-Type")
             request.setValue("\(base64ImageData?.length)", forHTTPHeaderField: "Content-Length")
             request.HTTPMethod = "POST"
+            request.HTTPBody = base64ImageData
             
-            NSURLSession.sharedSession().uploadTaskWithRequest(request, fromData: base64ImageData, completionHandler: { (data, response, error) -> Void in
+            println("ApiHandler :: Upload Image")
+            
+            let dataTask = NSURLSession.sharedSession().dataTaskWithRequest(request, completionHandler: { (data, response, error) -> Void in
                 if let imageUrlString = NSString(data: data, encoding: NSUTF8StringEncoding) as? String, imageUrl = NSURL(string: imageUrlString) {
                     println("ApiHandler :: Image uploaded :: \(imageUrl)")
                     completionHandler(imageUrl: imageUrl)
@@ -163,6 +168,7 @@ class ApiHandler: NSObject {
                     sender.presentViewController(alert, animated: true, completion: nil)
                 }
             })
+            dataTask.resume()
         } else {
             completionHandler(imageUrl: nil)
         }
