@@ -13,15 +13,15 @@ import MobileCoreServices
 import CoreGraphics
 import Foundation
 
-class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMapViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIGestureRecognizerDelegate, UITextViewDelegate {
+class AddViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIGestureRecognizerDelegate, UITextViewDelegate {
+    @IBOutlet weak var serviceButton: UIButton!
+    @IBOutlet weak var streetLabel: UILabel!
     @IBOutlet weak var mapView: MKMapView!
-    @IBOutlet weak var streetCell: UITableViewCell!
-    @IBOutlet weak var serviceCell: UITableViewCell!
     @IBOutlet weak var sendButton: UIButton!
     @IBOutlet weak var photoButton: UIButton!
-    @IBOutlet weak var photoCell: UITableViewCell!
     @IBOutlet weak var descriptionField: UITextView!
     
+    var viewCenter: CGPoint?
     let locationManager = CLLocationManager()
     var location: CLLocation?
     var service: Service? {
@@ -44,19 +44,28 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
         super.viewDidLoad()
         // Do view setup here.
         
-        tableView.keyboardDismissMode = .OnDrag
+        let tapRecognizer = UITapGestureRecognizer(target: self, action: "dismissKeyboard")
+        self.view.addGestureRecognizer(tapRecognizer)
+        
+        let swipeRecognizer = UISwipeGestureRecognizer(target: self, action: "dismissKeyboard")
+        swipeRecognizer.direction = .Down
+        descriptionField.addGestureRecognizer(swipeRecognizer)
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardWillShow:", name: UIKeyboardWillShowNotification, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardDidHide:", name: UIKeyboardDidHideNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardDidHide:", name: UIKeyboardWillHideNotification, object: nil)
         
-        streetCell.textLabel?.text = locationName
+        streetLabel.text = locationName
         
         sendButton.addTarget(self, action: "sendConcern:", forControlEvents: .TouchUpInside)
-        sendButton.enabled = false
         
         descriptionField.delegate = self
         
+        let middleButtonsEdgeInset = UIEdgeInsetsMake(70, 0, 0, 0)
         photoButton.addTarget(self, action: "attachPhoto:", forControlEvents: .TouchUpInside)
+        photoButton.titleEdgeInsets = middleButtonsEdgeInset
+        serviceButton.titleLabel?.numberOfLines = 2
+        serviceButton.titleLabel?.lineBreakMode = .ByWordWrapping
+        serviceButton.titleEdgeInsets = middleButtonsEdgeInset
         
         locationManager.delegate = self
         locationManager.requestWhenInUseAuthorization()
@@ -68,9 +77,6 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
     
     override func viewWillAppear(animated: Bool) {
         updateMap()
-        if let indexPath = tableView.indexPathForSelectedRow() {
-            tableView.deselectRowAtIndexPath(indexPath, animated: true)
-        }
     }
     
     // MARK: - Validation
@@ -92,15 +98,12 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
     // MARK: - Submission
     
     func sendConcern(sender: AnyObject) {
-        sendButton.enabled = false
-        
-        if !checkSettings() {
-            showSettingsView()
-            sendButton.enabled = true
-            return
-        }
         
         if let service: Service = service, location = location {
+            if !checkSettings() {
+                showSettingsView()
+                return
+            }
             let locationName = AddressManager.sharedManager.getAddressStringFromPlacemark(placemark, includeLocality: true)
             let concern = Concern(service: service, location: location, address: locationName, description: descriptionField.text, image: image)
             
@@ -109,14 +112,13 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
                 ApiHandler.sharedHandler.submitConcern(concern, sender: self)
             })
             let cancelAction = UIAlertAction(title: "Abbrechen", style: .Cancel, handler: { (action) -> Void in
-                self.sendButton.enabled = true
+                //self.sendButton.enabled = true
             })
             confirmationAlert.addAction(confirmationAction)
             confirmationAlert.addAction(cancelAction)
             presentViewController(confirmationAlert, animated: true, completion: nil)
         } else {
             // no service specified
-            // should not happen as sendButton would be disabled
             let missingCategoryAlert = UIAlertController(title: "Keine Kategorie ausgewählt", message: "Bitte wähle eine Kategorie aus, um dein Anliegen einzureichen.", preferredStyle: .Alert)
             let closeAction = UIAlertAction(title: "Ok", style: .Cancel, handler: nil)
             missingCategoryAlert.addAction(closeAction)
@@ -155,19 +157,18 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
     
     func updateLocationName() {
         let street = AddressManager.sharedManager.getAddressStringFromPlacemark(placemark, includeLocality: false)
-        self.streetCell.textLabel?.text = street
-        self.streetCell.setNeedsLayout()
+        self.streetLabel.text = street
     }
     
     // MARK: - Service Management
     
     func updateService() {
         if let service = service {
-            serviceCell.detailTextLabel?.text = service.name
-            sendButton.enabled = true
+            serviceButton.setTitle(service.name, forState: .Normal)
+            //sendButton.enabled = true
         } else {
-            serviceCell.detailTextLabel?.text = "Unknown"
-            sendButton.enabled = false
+            serviceButton.setTitle("Kategorie", forState: .Normal)
+            //sendButton.enabled = false
         }
     }
     
@@ -242,28 +243,29 @@ class AddViewController: UITableViewController, CLLocationManagerDelegate, MKMap
         return newImage
     }
     
-    // MARK: - TableView
-    
-    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        
-    }
-    
     // MARK: - Keyboard Handling
+    
+    func dismissKeyboard() {
+        descriptionField.resignFirstResponder()
+    }
     
     func keyboardWillShow(notification: NSNotification) {
         if let userInfo = notification.userInfo as? Dictionary<NSString, AnyObject>, keyboardRect = userInfo[UIKeyboardFrameEndUserInfoKey] as? NSValue {
-            tableView.contentInset.bottom =  keyboardRect.CGRectValue().height
-            if let cell = descriptionField.superview?.superview as? UITableViewCell, indexPath = tableView.indexPathForCell(cell) {
-                tableView.scrollToRowAtIndexPath(indexPath, atScrollPosition: .Top, animated: true)
+            if viewCenter == nil {
+                viewCenter = view.center
+            }
+            if let viewCenter = viewCenter {
+                view.center = CGPointMake(view.center.x, viewCenter.y - keyboardRect.CGRectValue().height)
             }
         }
     }
     
     func keyboardDidHide(notification: NSNotification) {
         UIView.animateWithDuration(0.2, animations: { () -> Void in
-            self.tableView.contentInset.bottom = 0
+            if let viewCenter = self.viewCenter {
+                self.view.center = viewCenter
+            }
         })
     }
-    
     
 }
