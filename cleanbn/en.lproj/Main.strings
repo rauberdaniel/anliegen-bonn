@@ -1,0 +1,45 @@
+
+/* Class = "UIButton"; normalTitle = "Submit"; ObjectID = "19O-NT-mrJ"; */
+"19O-NT-mrJ.normalTitle" = "Submit";
+
+/* Class = "UILabel"; text = "Street"; ObjectID = "3OF-JQ-6sZ"; */
+"3OF-JQ-6sZ.text" = "Street";
+
+/* Class = "UILabel"; text = "Subtitle"; ObjectID = "8iQ-4H-DXe"; */
+"8iQ-4H-DXe.text" = "Subtitle";
+
+/* Class = "UILabel"; text = "Title"; ObjectID = "CHY-Mf-00g"; */
+"CHY-Mf-00g.text" = "Title";
+
+/* Class = "UINavigationItem"; title = "Concern"; ObjectID = "D7u-2H-SZC"; */
+"D7u-2H-SZC.title" = "Concern";
+
+/* Class = "UILabel"; text = "Service Title"; ObjectID = "KTB-Yd-cGT"; */
+"KTB-Yd-cGT.text" = "Service Title";
+
+/* Class = "UINavigationItem"; title = "Settings"; ObjectID = "Lno-Zk-ENZ"; */
+"Lno-Zk-ENZ.title" = "Settings";
+
+/* Class = "UIButton"; accessibilityLabel = "Continue"; ObjectID = "RzF-Rd-cJ8"; */
+"RzF-Rd-cJ8.accessibilityLabel" = "Continue";
+
+/* Class = "UILabel"; text = "Street"; ObjectID = "WIg-WY-GZv"; */
+"WIg-WY-GZv.text" = "Street";
+
+/* Class = "UINavigationItem"; title = "Location"; ObjectID = "bW1-KB-Kd0"; */
+"bW1-KB-Kd0.title" = "Location";
+
+/* Class = "UILabel"; text = "Privacy Policy"; ObjectID = "cWJ-dU-IgU"; */
+"cWJ-dU-IgU.text" = "Privacy Policy";
+
+/* Class = "UIViewController"; title = "Details"; ObjectID = "dHf-Sc-E1g"; */
+"dHf-Sc-E1g.title" = "Details";
+
+/* Class = "UITextField"; placeholder = "Email Address"; ObjectID = "eiJ-NZ-T7O"; */
+"eiJ-NZ-T7O.placeholder" = "Email Address";
+
+/* Class = "UIButton"; normalTitle = "Add Photo"; ObjectID = "nTV-vf-wPN"; */
+"nTV-vf-wPN.normalTitle" = "Add Photo";
+
+/* Class = "UIButton"; normalTitle = "Category"; ObjectID = "oEF-Wo-xQe"; */
+"oEF-Wo-xQe.normalTitle" = "Service";

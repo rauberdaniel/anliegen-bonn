@@ -68,7 +68,7 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
             userLocationButton.enabled = true
         }
         
-        streetLabel.text = "Lokalisiere…"
+        streetLabel.text = NSLocalizedString("general.locating", comment: "")
         
         if location != nil {
             // location is already set
@@ -93,11 +93,11 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
     
     func updateLocationName() {
         if dragging > 0 {
-            streetLabel.text = "Lokalisiere…"
+            streetLabel.text = NSLocalizedString("general.locating", comment: "")
         } else {
             if !ValidationHandler.isValidLocation(location) {
                 println("Geocoder :: Invalid Location")
-                streetLabel.text = "Ungültige Position"
+                streetLabel.text = NSLocalizedString("location.invalid.title", comment: "")
                 return
             }
             println("Geocoder :: ReverseGeocodeLocation")
@@ -112,7 +112,7 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
                 if let placemark = placemarks[0] as? CLPlacemark {
                     if placemark.thoroughfare == nil {
                         println("Geocoder :: ReturnedNil")
-                        self.streetLabel.text = "Adresse unbekannt"
+                        self.streetLabel.text = NSLocalizedString("location.unknown.title", comment: "")
                         //self.updateLocationName()
                         return
                     }
@@ -260,8 +260,10 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "nextStep" {
             if !ValidationHandler.isValidLocation(location) {
-                let cancelAction = UIAlertAction(title: "Abbrechen", style: .Cancel, handler: nil)
-                let alert = UIAlertController(title: "Ungültige Position", message: "Die ausgewählte Position gehört nicht zur Stadt Bonn und kann deshalb nicht erfasst werden.", preferredStyle: .Alert)
+                let cancelAction = UIAlertAction(title: NSLocalizedString("general.canel", comment: ""), style: .Cancel, handler: nil)
+                let alertTitle = NSLocalizedString("location.invalid.title", comment: "")
+                let alertText = NSLocalizedString("location.invalid.text", comment: "")
+                let alert = UIAlertController(title: alertTitle, message: alertText, preferredStyle: .Alert)
                 alert.addAction(cancelAction)
                 self.presentViewController(alert, animated: true, completion: nil)
                 return

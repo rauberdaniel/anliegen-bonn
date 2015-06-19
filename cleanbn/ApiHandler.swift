@@ -74,10 +74,12 @@ class ApiHandler: NSObject {
         Submits a concern by uploading a potential image and sending the concern data to the API
     */
     func submitConcern(concern: Concern, sender: AddViewController) {
-        let progressAlert = UIAlertController(title: "Anliegen wird übermittelt…", message: "Bitte hab einen Moment Geduld, während dein Anliegen übermittelt wird.", preferredStyle: .Alert)
+        let submissionTitle = NSLocalizedString("submission.processing.title", comment: "")
+        let submissionText = NSLocalizedString("submission.processing.text", comment: "")
+        let progressAlert = UIAlertController(title: submissionTitle, message: submissionText, preferredStyle: .Alert)
         sender.presentViewController(progressAlert, animated: true, completion: nil)
         
-        let closeAction = UIAlertAction(title: "Ok", style: .Cancel, handler: nil)
+        let closeAction = UIAlertAction(title: NSLocalizedString("general.ok", comment: ""), style: .Cancel, handler: nil)
         
         uploadImage(concern, sender: sender, completionHandler: { (imageUrl) -> Void in
             concern.imageUrl = imageUrl
@@ -89,8 +91,10 @@ class ApiHandler: NSObject {
                         NSUserDefaults.standardUserDefaults().mutableArrayValueForKey("requestsSent").addObject(requestID)
                         println("ApiHandler :: SubmitConcernForm :: Submitted :: \(requestID)")
                         
-                        let successAlert = UIAlertController(title: "Anliegen übermittelt", message: "Dein Anliegen wurde erfolgreich übermittelt und wird zeitnah bearbeitet.", preferredStyle: UIAlertControllerStyle.Alert)
-                        let closeAndBackAction = UIAlertAction(title: "Ok", style: .Cancel, handler: { (action) -> Void in
+                        let successTitle = NSLocalizedString("submission.done.title", comment: "")
+                        let successText = NSLocalizedString("submission.done.text", comment: "")
+                        let successAlert = UIAlertController(title: successTitle, message: successText, preferredStyle: UIAlertControllerStyle.Alert)
+                        let closeAndBackAction = UIAlertAction(title: NSLocalizedString("general.ok", comment: ""), style: .Cancel, handler: { (action) -> Void in
                             sender.navigationController?.popViewControllerAnimated(true)
                         })
                         successAlert.addAction(closeAndBackAction)
@@ -102,7 +106,9 @@ class ApiHandler: NSObject {
                     // Connection Error
                     println("ApiHandler :: SubmitConcernForm :: Error :: \(error.localizedDescription) :: \(NSString(data: data, encoding: NSUTF8StringEncoding))")
                     sender.sendButton.enabled = true
-                    let errorAlert = UIAlertController(title: "Fehler", message: "Dein Anliegen konnte nicht übermittelt werden. Bitte verbinde dich mit dem Internet, um dein Anliegen zu senden.", preferredStyle: .Alert)
+                    let errorTitle = NSLocalizedString("submission.error.title", comment: "")
+                    let errorText = NSLocalizedString("submission.error.text", comment: "")
+                    let errorAlert = UIAlertController(title: errorTitle, message: errorText, preferredStyle: .Alert)
                     errorAlert.addAction(closeAction)
                     progressAlert.dismissViewControllerAnimated(true, completion: { () -> Void in
                         sender.presentViewController(errorAlert, animated: true, completion: nil)
@@ -163,8 +169,10 @@ class ApiHandler: NSObject {
                     completionHandler(imageUrl: imageUrl)
                 } else {
                     println("ApiHandler :: Image upload failed :: \(error.localizedDescription)")
-                    let alert = UIAlertController(title: "Fehler", message: "Das Foto konnte nicht übertragen werden. Bitte versuche es später erneut.", preferredStyle: .Alert)
-                    alert.addAction(UIAlertAction(title: "Ok", style: .Cancel, handler: nil))
+                    let errorTitle = NSLocalizedString("submission.error.title", comment: "")
+                    let errorText = NSLocalizedString("submission.error.text", comment: "")
+                    let alert = UIAlertController(title: errorTitle, message: errorText, preferredStyle: .Alert)
+                    alert.addAction(UIAlertAction(title: NSLocalizedString("general.ok", comment: ""), style: .Cancel, handler: nil))
                     sender.presentViewController(alert, animated: true, completion: nil)
                 }
             })

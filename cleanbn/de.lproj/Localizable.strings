@@ -1,0 +1,25 @@
+/* 
+  Localizable.strings
+  cleanbn
+
+  Created by Daniel Rauber on 19.06.15.
+  Copyright (c) 2015 Daniel Rauber. All rights reserved.
+*/
+
+"general.cancel" = "Abbrechen";
+"general.ok" = "Ok";
+"general.submit" = "Senden";
+"general.service" = "Kategorie";
+
+"submit.confirmation.title" = "Anliegen senden?";
+"submit.confirmation.text" = "Möchtest du dein Anliegen übermitteln? Die angegebenen Daten werden somit öffentlich.";
+
+"service.notselected.title" = "Keine Kategorie ausgewählt";
+"service.notselected.text" = "Bitte wähle eine Kategorie aus, um dein Anliegen einzureichen.";
+
+"photo.select" = "Foto hinzufügen";
+"photo.replace" = "Foto ersetzen";
+"photo.source.title" = "Foto wählen";
+"photo.source.text" = "Aus welcher Quelle möchtest du ein Foto wählen?";
+"photo.source.camera" = "Kamera";
+"photo.source.library" = "Bibliothek";

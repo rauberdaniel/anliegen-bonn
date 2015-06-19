@@ -18,7 +18,7 @@ class ConcernTypeViewController: UITableViewController {
         
         services = ServiceManager.sharedManager.getServices()
         
-        self.title = "Kategorie"
+        self.title = NSLocalizedString("general.service", comment: "")
     }
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {

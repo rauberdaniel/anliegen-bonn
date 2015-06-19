@@ -1,0 +1,37 @@
+/* 
+  Localizable.strings
+  cleanbn
+
+  Created by Daniel Rauber on 19.06.15.
+  Copyright (c) 2015 Daniel Rauber. All rights reserved.
+*/
+
+"general.cancel" = "Abbrechen";
+"general.ok" = "Ok";
+"general.submit" = "Senden";
+"general.service" = "Kategorie";
+"general.locating" = "Lokalisiere…";
+
+"submit.confirmation.title" = "Anliegen senden?";
+"submit.confirmation.text" = "Möchtest du dein Anliegen übermitteln? Die angegebenen Daten werden somit öffentlich.";
+
+"service.notselected.title" = "Keine Kategorie ausgewählt";
+"service.notselected.text" = "Bitte wähle eine Kategorie aus, um dein Anliegen einzureichen.";
+
+"photo.select" = "Foto hinzufügen";
+"photo.replace" = "Foto ersetzen";
+"photo.source.title" = "Foto wählen";
+"photo.source.text" = "Aus welcher Quelle möchtest du ein Foto wählen?";
+"photo.source.camera" = "Kamera";
+"photo.source.library" = "Bibliothek";
+
+"submission.processing.title" = "Anliegen wird übermittelt…";
+"submission.processing.text" = "Bitte hab einen Moment Geduld, während dein Anliegen übermittelt wird.";
+"submission.done.title" = "Anliegen übermittelt";
+"submission.done.text" = "Dein Anliegen wurde erfolgreich übermittelt und wird schnellstmöglich bearbeitet.";
+"submission.error.title" = "Fehler";
+"submission.error.text" = "Dein Anliegen konnte nicht übermittelt werden. Bitte verbinde dich mit dem Internet und versuche es erneut.";
+
+"location.invalid.title" = "Ungültige Position";
+"location.invalid.text" = "Die ausgewählte Position gehört nicht zur Stadt Bonn und kann deshalb nicht erfasst werden.";
+"location.unknown.title" = "Adresse unbekannt";

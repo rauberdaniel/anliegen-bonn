@@ -21,7 +21,7 @@ und dem OpenKnowledge Lab Bonn</string>
                     <nil key="highlightedColor"/>
                 </label>
                 <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFill" image="LaunchBackground" translatesAutoresizingMaskIntoConstraints="NO" id="00O-P3-3ii">
-                    <rect key="frame" x="0.0" y="103" width="375" height="375"/>
+                    <rect key="frame" x="0.0" y="102.5" width="375" height="375"/>
                     <color key="backgroundColor" red="0.15294117647058825" green="0.76078431372549016" blue="0.90980392156862744" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                 </imageView>
             </subviews>

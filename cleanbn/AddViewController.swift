@@ -107,11 +107,11 @@ class AddViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
             let locationName = AddressManager.sharedManager.getAddressStringFromPlacemark(placemark, includeLocality: true)
             let concern = Concern(service: service, location: location, address: locationName, description: descriptionField.text, image: image)
             
-            let confirmationAlert = UIAlertController(title: "Anliegen senden?", message: "Möchtest du dein Anliegen übermitteln? Die angegebenen Daten werden somit öffentlich.", preferredStyle: .ActionSheet)
-            let confirmationAction = UIAlertAction(title: "Senden", style: .Default, handler: { (action) -> Void in
+            let confirmationAlert = UIAlertController(title: NSLocalizedString("submit.confirmation.title", comment: ""), message: NSLocalizedString("submit.confirmation.text", comment: ""), preferredStyle: .ActionSheet)
+            let confirmationAction = UIAlertAction(title: NSLocalizedString("general.submit", comment: ""), style: .Default, handler: { (action) -> Void in
                 ApiHandler.sharedHandler.submitConcern(concern, sender: self)
             })
-            let cancelAction = UIAlertAction(title: "Abbrechen", style: .Cancel, handler: { (action) -> Void in
+            let cancelAction = UIAlertAction(title: NSLocalizedString("general.cancel", comment: ""), style: .Cancel, handler: { (action) -> Void in
                 //self.sendButton.enabled = true
             })
             confirmationAlert.addAction(confirmationAction)
@@ -119,8 +119,8 @@ class AddViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
             presentViewController(confirmationAlert, animated: true, completion: nil)
         } else {
             // no service specified
-            let missingCategoryAlert = UIAlertController(title: "Keine Kategorie ausgewählt", message: "Bitte wähle eine Kategorie aus, um dein Anliegen einzureichen.", preferredStyle: .Alert)
-            let closeAction = UIAlertAction(title: "Ok", style: .Cancel, handler: nil)
+            let missingCategoryAlert = UIAlertController(title: NSLocalizedString("service.notselected.title", comment: ""), message: NSLocalizedString("service.notselected.text", comment: ""), preferredStyle: .Alert)
+            let closeAction = UIAlertAction(title: NSLocalizedString("general.ok", comment: ""), style: .Cancel, handler: nil)
             missingCategoryAlert.addAction(closeAction)
             presentViewController(missingCategoryAlert, animated: true, completion: nil)
         }
@@ -167,7 +167,7 @@ class AddViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
             serviceButton.setTitle(service.name, forState: .Normal)
             //sendButton.enabled = true
         } else {
-            serviceButton.setTitle("Kategorie", forState: .Normal)
+            serviceButton.setTitle(NSLocalizedString("general.service", comment: ""), forState: .Normal)
             //sendButton.enabled = false
         }
     }
@@ -184,7 +184,7 @@ class AddViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     
     func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [NSObject : AnyObject]) {
         if let image = info[NSString(string: "UIImagePickerControllerOriginalImage")] as? UIImage {
-            photoButton.setTitle("1 Foto ausgewählt", forState: UIControlState.Normal)
+            photoButton.setTitle(NSLocalizedString("photo.replace", comment: ""), forState: UIControlState.Normal)
             let smallImage = imageWithImage(image, scaledToMaxSize: CGSizeMake(2048, 2048))
             self.image = smallImage
         }
@@ -192,20 +192,20 @@ class AddViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     }
     
     func attachPhoto(sender: AnyObject) {
-        let alert = UIAlertController(title: "Foto hinzufügen", message: "Aus welcher Quelle möchtest du ein Foto hinzufügen?", preferredStyle: .ActionSheet)
+        let alert = UIAlertController(title: NSLocalizedString("photo.source.title", comment: ""), message: NSLocalizedString("photo.source.text", comment: ""), preferredStyle: .ActionSheet)
         if UIImagePickerController.isSourceTypeAvailable(.Camera) {
-            let captureAction = UIAlertAction(title: "Kamera", style: .Default) { (action) -> Void in
+            let captureAction = UIAlertAction(title: NSLocalizedString("photo.source.camera", comment: ""), style: .Default) { (action) -> Void in
                 self.selectPhoto(.Camera)
             }
             alert.addAction(captureAction)
         }
         if UIImagePickerController.isSourceTypeAvailable(.PhotoLibrary) {
-            let selectAction = UIAlertAction(title: "Bibliothek", style: .Default) { (action) -> Void in
+            let selectAction = UIAlertAction(title: NSLocalizedString("photo.source.library", comment: ""), style: .Default) { (action) -> Void in
                 self.selectPhoto(.PhotoLibrary)
             }
             alert.addAction(selectAction)
         }
-        let cancelAction = UIAlertAction(title: "Abbrechen", style: .Cancel, handler: nil)
+        let cancelAction = UIAlertAction(title: NSLocalizedString("general.cancel", comment: ""), style: .Cancel, handler: nil)
         alert.addAction(cancelAction)
         presentViewController(alert, animated: true, completion: nil)
     }
