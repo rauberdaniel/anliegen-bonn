@@ -20,11 +20,11 @@ class AddressManager: NSObject {
         var street = "location.unknown.title".localized
         var locality = ""
         if let placemark = placemark {
-            if placemark.thoroughfare != nil {
-                street = "\(placemark.thoroughfare)"
+            if let thoroughfare = placemark.thoroughfare {
+                street = "\(thoroughfare)"
                 
-                if placemark.subThoroughfare != nil {
-                    street += " \(placemark.subThoroughfare)"
+                if let subThoroughfare = placemark.subThoroughfare {
+                    street += " \(subThoroughfare)"
                 }
             }
             if (placemark.locality != nil && placemark.postalCode != nil) {
