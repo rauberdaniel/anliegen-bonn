@@ -31,8 +31,8 @@ class SettingsViewController: UITableViewController {
         let userDefaults = NSUserDefaults.standardUserDefaults()
         var success: Bool = false
         if let mailCell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 0)) {
-            if let mailField = mailCell.viewWithTag(2) as? UITextField {
-                if ValidationHandler.isValidEmail(mailField.text) {
+            if let mailField = mailCell.viewWithTag(2) as? UITextField, mailFieldText = mailField.text {
+                if ValidationHandler.isValidEmail(mailFieldText) {
                     userDefaults.setObject(mailField.text, forKey: "email")
                     success = true
                     
@@ -84,7 +84,7 @@ class SettingsViewController: UITableViewController {
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         if indexPath.section == 0 {
-            let cell = tableView.dequeueReusableCellWithIdentifier("MailCell") as! UITableViewCell
+            let cell = tableView.dequeueReusableCellWithIdentifier("MailCell")!
             
             if let mail = NSUserDefaults.standardUserDefaults().stringForKey("email") {
                 (cell.viewWithTag(2) as! UITextField).text = mail
@@ -92,7 +92,7 @@ class SettingsViewController: UITableViewController {
             return cell
         }
         
-        let cell = tableView.dequeueReusableCellWithIdentifier("TermsCell") as! UITableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("TermsCell")!
         
         if indexPath.row == 0 {
             cell.textLabel?.text = "Datenschutzhinweise"
@@ -128,10 +128,10 @@ class SettingsViewController: UITableViewController {
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "showTerms" {
             if let dest = segue.destinationViewController as? TermsViewController {
-                if tableView.indexPathForSelectedRow()?.row == 0 {
+                if tableView.indexPathForSelectedRow?.row == 0 {
                     dest.type = "privacy"
                 }
-                if tableView.indexPathForSelectedRow()?.row == 1 {
+                if tableView.indexPathForSelectedRow?.row == 1 {
                     dest.type = "rules"
                 }
             }

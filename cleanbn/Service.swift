@@ -18,7 +18,7 @@ class Service: NSObject, NSCoding {
         self.name = name
     }
     
-    required init(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         let dict = aDecoder.decodeObjectForKey("service") as! [String:String]
         self.code = dict["code"]!
         self.name = dict["name"]!

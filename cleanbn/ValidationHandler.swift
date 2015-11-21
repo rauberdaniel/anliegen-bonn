@@ -19,7 +19,7 @@ class ValidationHandler: NSObject {
     }
     
     class func isValidLocation(location: CLLocation?) -> Bool {
-        if location?.coordinate.latitude > 50.63 && location?.coordinate.latitude < 59.78 && location?.coordinate.longitude > 7.01 && location?.coordinate.longitude < 7.22 {
+        if location?.coordinate.latitude > 50.63 && location?.coordinate.latitude < 50.78 && location?.coordinate.longitude > 7.01 && location?.coordinate.longitude < 7.22 {
             return true
         }
         return false

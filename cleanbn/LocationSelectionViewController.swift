@@ -11,6 +11,8 @@ import MapKit
 import CoreLocation
 
 class LocationSelectionViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDelegate, UIGestureRecognizerDelegate {
+    @IBOutlet weak var _invalidLoationBannerConstraint: NSLayoutConstraint!
+    @IBOutlet weak var invalidLocationBanner: UIVisualEffectView!
     @IBOutlet weak var continueButton: UIButton!
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var locationMarker: UIImageView!
@@ -61,6 +63,9 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
         
         showRequestsOnMap()
         
+        // Invalid Location Banner
+        hideInvalidLocationBanner()
+        
         // Disable UserLocation Button when UserLocation is denied
         userLocationButton.enabled = false
         if CLLocationManager.authorizationStatus() == .AuthorizedWhenInUse {
@@ -68,7 +73,7 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
             userLocationButton.enabled = true
         }
         
-        streetLabel.text = NSLocalizedString("general.locating", comment: "")
+        streetLabel.text = "general.locating".localized
         
         if location != nil {
             // location is already set
@@ -91,33 +96,43 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
         }
     }
     
+    override func viewDidAppear(animated: Bool) {
+        //_invalidLoationBannerConstraint.constant = 20
+    }
+    
     func updateLocationName() {
         if dragging > 0 {
-            streetLabel.text = NSLocalizedString("general.locating", comment: "")
+            streetLabel.text = "general.locating".localized
         } else {
             if !ValidationHandler.isValidLocation(location) {
-                println("Geocoder :: Invalid Location")
-                streetLabel.text = NSLocalizedString("location.invalid.title", comment: "")
-                return
+                print("Geocoder :: Invalid Location")
+                showInvalidLocationBanner()
+            } else {
+                hideInvalidLocationBanner()
             }
-            println("Geocoder :: ReverseGeocodeLocation")
-            geocoder.reverseGeocodeLocation(location, completionHandler: { (placemarks, error) -> Void in
-                if error != nil {
-                    println("Geocoder :: Error :: \(error.localizedDescription)")
+            print("Geocoder :: ReverseGeocodeLocation")
+            
+            
+            geocoder.reverseGeocodeLocation(location!, completionHandler: { (placemarks, error) -> Void in
+                if let error = error {
+                    print("Geocoder :: Error :: \(error.localizedDescription)")
                     return
                 }
-                if (self.dragging > 0 || placemarks.count == 0) {
+                if (self.dragging > 0) {
                     return
                 }
-                if let placemark = placemarks[0] as? CLPlacemark {
-                    if placemark.thoroughfare == nil {
-                        println("Geocoder :: ReturnedNil")
-                        self.streetLabel.text = NSLocalizedString("location.unknown.title", comment: "")
+                if let placemarks = placemarks {
+                    if (placemarks.count == 0) {
+                        return
+                    }
+                    if placemarks[0].thoroughfare == nil {
+                        print("Geocoder :: ReturnedNil")
+                        self.streetLabel.text = "location.unknown.title".localized
                         //self.updateLocationName()
                         return
                     }
-                    let street = AddressManager.sharedManager.getAddressStringFromPlacemark(placemark, includeLocality: false)
-                    println("Geocoder :: Returned :: \(street)")
+                    let street = AddressManager.sharedManager.getAddressStringFromPlacemark(placemarks[0], includeLocality: false)
+                    print("Geocoder :: Returned :: \(street)")
                     self.streetLabel.text = street
                 }
             })
@@ -158,7 +173,7 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
     
     // MARK: - LocationManagerDelegate
     
-    func locationManager(manager: CLLocationManager!, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
+    func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
         if status == .AuthorizedWhenInUse || status == .AuthorizedAlways {
             // permission granted
             startMonitoringLocation()
@@ -168,34 +183,33 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
         }
     }
     
-    func locationManager(manager: CLLocationManager!, didUpdateLocations locations: [AnyObject]!) {
-        if let newLocation = locations[0] as? CLLocation {
-            userLocation = newLocation
-            
-            if !customLocation {
-                // following user location
-                if location == nil || userLocation?.distanceFromLocation(location) > 5 {
-                    // only update location if it has changed at least 5 meters
-                    moveToLocation(newLocation)
-                }
+    func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        let newLocation = locations[0]
+        userLocation = newLocation
+        
+        if !customLocation {
+            // following user location
+            if location == nil || userLocation?.distanceFromLocation(location!) > 5 {
+                // only update location if it has changed at least 5 meters
+                moveToLocation(newLocation)
             }
         }
     }
     
-    func locationManager(manager: CLLocationManager!, didFailWithError error: NSError!) {
-        println("LocationManager :: DidFail")
+    func locationManager(manager: CLLocationManager, didFailWithError error: NSError) {
+        print("LocationManager :: DidFail")
         if error.code == CLError.Denied.rawValue {
             // Location Services are not allowed
             locationManager.stopUpdatingLocation()
             userLocationButton.enabled = false
             userLocationButton.selected = false
-            println("LocationManager :: Denied")
+            print("LocationManager :: Denied")
         }
     }
     
     // MARK: - MapViewDelegate
     
-    func mapView(mapView: MKMapView!, regionWillChangeAnimated animated: Bool) {
+    func mapView(mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
         dragging++
         updateLocationName()
         // lift the blob
@@ -204,7 +218,7 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
             }, completion: nil)
     }
     
-    func mapView(mapView: MKMapView!, regionDidChangeAnimated animated: Bool) {
+    func mapView(mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
         dragging--
         let coord = mapView.convertPoint(CGPointMake(mapView.frame.width/2, mapView.frame.height/2+32), toCoordinateFromView: mapView)
         location = CLLocation(latitude: coord.latitude, longitude: coord.longitude)
@@ -217,11 +231,11 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
     // MARK: - Map Controller
     
     @IBAction func locateUser(sender: UIButton) {
-        sender.selected = true
-        customLocation = false
-        location = userLocation
-        if let location = location {
-            moveToLocation(location)
+        if let userLocation = userLocation {
+            sender.selected = true
+            customLocation = false
+            location = userLocation
+            moveToLocation(userLocation)
         }
     }
     
@@ -255,14 +269,41 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
         }
     }
     
+    // MARK: - Banner
+    
+    func showInvalidLocationBanner() {
+        print("InvalidLocatioBanner :: show")
+        invalidLocationBanner.hidden = false
+        self.view.layoutIfNeeded()
+        
+        self._invalidLoationBannerConstraint.constant = 0
+        
+        UIView.animateWithDuration(0.2, animations: { () -> Void in
+            self.view.layoutIfNeeded()
+        })
+    }
+    
+    func hideInvalidLocationBanner() {
+        print("InvalidLocatioBanner :: hide")
+        self.view.layoutIfNeeded()
+        
+        self._invalidLoationBannerConstraint.constant = -60
+        
+        UIView.animateWithDuration(0.2, animations: { () -> Void in
+            self.view.layoutIfNeeded()
+        }) { (completion) -> Void in
+            self.invalidLocationBanner.hidden = true
+        }
+    }
+    
     // MARK: - Seagues
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "nextStep" {
             if !ValidationHandler.isValidLocation(location) {
-                let cancelAction = UIAlertAction(title: NSLocalizedString("general.canel", comment: ""), style: .Cancel, handler: nil)
-                let alertTitle = NSLocalizedString("location.invalid.title", comment: "")
-                let alertText = NSLocalizedString("location.invalid.text", comment: "")
+                let cancelAction = UIAlertAction(title: "general.cancel".localized, style: .Cancel, handler: nil)
+                let alertTitle = "location.invalid.title".localized
+                let alertText = "location.invalid.text".localized
                 let alert = UIAlertController(title: alertTitle, message: alertText, preferredStyle: .Alert)
                 alert.addAction(cancelAction)
                 self.presentViewController(alert, animated: true, completion: nil)

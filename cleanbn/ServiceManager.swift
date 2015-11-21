@@ -30,11 +30,11 @@ class ServiceManager: NSObject {
     }
     
     func updateServices() {
-        println("ServiceManager :: Updating");
+        print("ServiceManager :: Updating");
         ApiHandler.sharedHandler.getServices { (services) -> Void in
             let data = NSKeyedArchiver.archivedDataWithRootObject(services)
             NSUserDefaults.standardUserDefaults().setObject(data, forKey: "services")
-            println("ServiceManager :: Updated")
+            print("ServiceManager :: Updated")
         }
     }
 }

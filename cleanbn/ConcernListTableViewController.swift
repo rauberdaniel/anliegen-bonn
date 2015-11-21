@@ -28,7 +28,7 @@ class ConcernListTableViewController: UITableViewController {
         }
         
         ApiHandler.sharedHandler.getConcerns { (concerns) -> Void in
-            println("ConcernList :: ReceivedConcerns :: \(concerns.count)")
+            print("ConcernList :: ReceivedConcerns :: \(concerns.count)")
             self.concerns = concerns
             self.tableView.reloadData()
         }
@@ -75,13 +75,13 @@ class ConcernListTableViewController: UITableViewController {
     }
 
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("ConcernCell", forIndexPath: indexPath) as! UITableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("ConcernCell", forIndexPath: indexPath) 
 
         // Configure the cell...
         if let concerns = concerns {
             let concern = concerns[indexPath.row]
             if let id = concern.id, date = concern.dateReported {
-                if contains(ownConcerns, id) {
+                if ownConcerns.contains(id) {
                     // this request was sent by the user
                     cell.imageView?.backgroundColor = UIColor(white: 0.9, alpha: 1)
                 } else {

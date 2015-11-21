@@ -18,7 +18,7 @@ class ConcernTypeViewController: UITableViewController {
         
         services = ServiceManager.sharedManager.getServices()
         
-        self.title = NSLocalizedString("general.service", comment: "")
+        self.title = "general.service".localized
     }
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -26,7 +26,7 @@ class ConcernTypeViewController: UITableViewController {
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("Cell") as! UITableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("Cell")!
         
         let name = services[indexPath.row].name
         cell.textLabel?.text = "\(name)"

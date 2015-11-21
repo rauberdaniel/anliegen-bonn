@@ -78,12 +78,12 @@ class Concern: NSObject, CLLocationManagerDelegate {
     
     func updateLocationName() {
         let geocoder = CLGeocoder()
-        geocoder.reverseGeocodeLocation(location, completionHandler: { (placemarks, error) -> Void in
-            if let placemark = placemarks[0] as? CLPlacemark {
+        geocoder.reverseGeocodeLocation(location!, completionHandler: { (placemarks, error) -> Void in
+            if let placemarks = placemarks {
+                let placemark = placemarks[0];
                 self.locationName = "\(placemark.thoroughfare) \(placemark.subThoroughfare)"
             }
-        })
-    }
+        })    }
     
     func getImageData() -> NSData? {
         if let image = image {
@@ -106,25 +106,29 @@ class Concern: NSObject, CLLocationManagerDelegate {
         }
         
         if let imageData = getImageData() {
-            let base64ImageString = imageData.base64EncodedStringWithOptions(.allZeros)
+            let base64ImageString = imageData.base64EncodedStringWithOptions([])
             dict["image"] = base64ImageString
         }
         
-        var parseError: NSError?
-        let data = NSJSONSerialization.dataWithJSONObject(dict, options: NSJSONWritingOptions.allZeros, error: &parseError)
+        let data: NSData?
+        do {
+            data = try NSJSONSerialization.dataWithJSONObject(dict, options: NSJSONWritingOptions())
+        } catch let error as NSError {
+            data = nil
+        }
         return data
     }
     
     func getFormString() -> String? {
         if let mail = NSUserDefaults.standardUserDefaults().stringForKey("email"), lat = location?.coordinate.latitude, long = location?.coordinate.longitude {
             var string = "service_code=\(service.code)&lat=\(lat)&long=\(long)&description=\(desc)&email=\(mail)"
-            if let mediaUrl = imageUrl, mediaUrlString = mediaUrl.absoluteString {
-                string += "&media_url=\(mediaUrlString)"
+            if let mediaUrl = imageUrl {
+                string += "&media_url=\(mediaUrl.absoluteString)"
             }
-            println("Concern :: Form Data :: \(string)")
+            print("Concern :: Form Data :: \(string)")
             return string
         } else {
-            println("Concern :: Mail or Location missing")
+            print("Concern :: Mail or Location missing")
         }
         return nil
     }

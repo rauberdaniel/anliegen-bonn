@@ -14,12 +14,12 @@ import CoreGraphics
 import Foundation
 
 class AddViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIGestureRecognizerDelegate, UITextViewDelegate {
-    @IBOutlet weak var serviceButton: UIButton!
-    @IBOutlet weak var streetLabel: UILabel!
     @IBOutlet weak var mapView: MKMapView!
+    @IBOutlet weak var locationButton: UIButton!
+    @IBOutlet weak var serviceButton: UIButton!
     @IBOutlet weak var sendButton: UIButton!
     @IBOutlet weak var photoButton: UIButton!
-    @IBOutlet weak var descriptionField: UITextView!
+    @IBOutlet weak var descriptionButton: UIButton!
     
     var viewCenter: CGPoint?
     let locationManager = CLLocationManager()
@@ -30,6 +30,7 @@ class AddViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         }
     }
     var image: UIImage?
+    var concernDescription: String?
     let customLocationAnnotation = MKPointAnnotation()
     var locationName: String?
     var placemark: CLPlacemark? {
@@ -47,18 +48,19 @@ class AddViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         let tapRecognizer = UITapGestureRecognizer(target: self, action: "dismissKeyboard")
         self.view.addGestureRecognizer(tapRecognizer)
         
+        /*
         let swipeRecognizer = UISwipeGestureRecognizer(target: self, action: "dismissKeyboard")
         swipeRecognizer.direction = .Down
         descriptionField.addGestureRecognizer(swipeRecognizer)
+        descriptionField.delegate = self
+        */
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardWillShow:", name: UIKeyboardWillShowNotification, object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardDidHide:", name: UIKeyboardWillHideNotification, object: nil)
         
-        streetLabel.text = locationName
+        locationButton.setTitle(locationName, forState: .Normal)
         
         sendButton.addTarget(self, action: "sendConcern:", forControlEvents: .TouchUpInside)
-        
-        descriptionField.delegate = self
         
         let middleButtonsEdgeInset = UIEdgeInsetsMake(70, 0, 0, 0)
         photoButton.addTarget(self, action: "attachPhoto:", forControlEvents: .TouchUpInside)
@@ -66,6 +68,8 @@ class AddViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         serviceButton.titleLabel?.numberOfLines = 2
         serviceButton.titleLabel?.lineBreakMode = .ByWordWrapping
         serviceButton.titleEdgeInsets = middleButtonsEdgeInset
+        locationButton.titleEdgeInsets = middleButtonsEdgeInset
+        descriptionButton.titleEdgeInsets = middleButtonsEdgeInset
         
         locationManager.delegate = self
         locationManager.requestWhenInUseAuthorization()
@@ -105,13 +109,13 @@ class AddViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                 return
             }
             let locationName = AddressManager.sharedManager.getAddressStringFromPlacemark(placemark, includeLocality: true)
-            let concern = Concern(service: service, location: location, address: locationName, description: descriptionField.text, image: image)
+            let concern = Concern(service: service, location: location, address: locationName, description: concernDescription, image: image)
             
-            let confirmationAlert = UIAlertController(title: NSLocalizedString("submit.confirmation.title", comment: ""), message: NSLocalizedString("submit.confirmation.text", comment: ""), preferredStyle: .ActionSheet)
-            let confirmationAction = UIAlertAction(title: NSLocalizedString("general.submit", comment: ""), style: .Default, handler: { (action) -> Void in
+            let confirmationAlert = UIAlertController(title: "submit.confirmation.title".localized, message: "submit.confirmation.text".localized, preferredStyle: .ActionSheet)
+            let confirmationAction = UIAlertAction(title: "general.submit".localized, style: .Default, handler: { (action) -> Void in
                 ApiHandler.sharedHandler.submitConcern(concern, sender: self)
             })
-            let cancelAction = UIAlertAction(title: NSLocalizedString("general.cancel", comment: ""), style: .Cancel, handler: { (action) -> Void in
+            let cancelAction = UIAlertAction(title: "general.cancel".localized, style: .Cancel, handler: { (action) -> Void in
                 //self.sendButton.enabled = true
             })
             confirmationAlert.addAction(confirmationAction)
@@ -119,8 +123,8 @@ class AddViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
             presentViewController(confirmationAlert, animated: true, completion: nil)
         } else {
             // no service specified
-            let missingCategoryAlert = UIAlertController(title: NSLocalizedString("service.notselected.title", comment: ""), message: NSLocalizedString("service.notselected.text", comment: ""), preferredStyle: .Alert)
-            let closeAction = UIAlertAction(title: NSLocalizedString("general.ok", comment: ""), style: .Cancel, handler: nil)
+            let missingCategoryAlert = UIAlertController(title: "service.notselected.title".localized, message: "service.notselected.text".localized, preferredStyle: .Alert)
+            let closeAction = UIAlertAction(title: "general.ok".localized, style: .Cancel, handler: nil)
             missingCategoryAlert.addAction(closeAction)
             presentViewController(missingCategoryAlert, animated: true, completion: nil)
         }
@@ -146,18 +150,21 @@ class AddViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     
     func updatePlacemark() {
         let geocoder = CLGeocoder()
-        geocoder.reverseGeocodeLocation(location, completionHandler: { (placemarks, error) -> Void in
-            if error == nil {
-                if let placemark = placemarks[0] as? CLPlacemark {
-                    self.placemark = placemark
+        if let location = location {
+            geocoder.reverseGeocodeLocation(location, completionHandler: { (placemarks, error) -> Void in
+                if error == nil {
+                    if let placemarks = placemarks {
+                        self.placemark = placemarks[0]
+                    }
                 }
-            }
-        })
+            })
+        }
     }
     
     func updateLocationName() {
         let street = AddressManager.sharedManager.getAddressStringFromPlacemark(placemark, includeLocality: false)
-        self.streetLabel.text = street
+        print("updateLocationName \(street)")
+        self.locationButton.setTitle(street, forState: .Normal)
     }
     
     // MARK: - Service Management
@@ -167,7 +174,7 @@ class AddViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
             serviceButton.setTitle(service.name, forState: .Normal)
             //sendButton.enabled = true
         } else {
-            serviceButton.setTitle(NSLocalizedString("general.service", comment: ""), forState: .Normal)
+            serviceButton.setTitle("general.service".localized, forState: .Normal)
             //sendButton.enabled = false
         }
     }
@@ -182,9 +189,9 @@ class AddViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     
     // MARK: - Image Controller
     
-    func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [NSObject : AnyObject]) {
-        if let image = info[NSString(string: "UIImagePickerControllerOriginalImage")] as? UIImage {
-            photoButton.setTitle(NSLocalizedString("photo.replace", comment: ""), forState: UIControlState.Normal)
+    func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
+        if let image = info[NSString(string: "UIImagePickerControllerOriginalImage") as String] as? UIImage {
+            photoButton.setTitle("photo.replace".localized, forState: UIControlState.Normal)
             let smallImage = imageWithImage(image, scaledToMaxSize: CGSizeMake(2048, 2048))
             self.image = smallImage
         }
@@ -192,20 +199,20 @@ class AddViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     }
     
     func attachPhoto(sender: AnyObject) {
-        let alert = UIAlertController(title: NSLocalizedString("photo.source.title", comment: ""), message: NSLocalizedString("photo.source.text", comment: ""), preferredStyle: .ActionSheet)
+        let alert = UIAlertController(title: "photo.source.title".localized, message: "photo.source.text".localized, preferredStyle: .ActionSheet)
         if UIImagePickerController.isSourceTypeAvailable(.Camera) {
-            let captureAction = UIAlertAction(title: NSLocalizedString("photo.source.camera", comment: ""), style: .Default) { (action) -> Void in
+            let captureAction = UIAlertAction(title: "photo.source.camera".localized, style: .Default) { (action) -> Void in
                 self.selectPhoto(.Camera)
             }
             alert.addAction(captureAction)
         }
         if UIImagePickerController.isSourceTypeAvailable(.PhotoLibrary) {
-            let selectAction = UIAlertAction(title: NSLocalizedString("photo.source.library", comment: ""), style: .Default) { (action) -> Void in
+            let selectAction = UIAlertAction(title: "photo.source.library".localized, style: .Default) { (action) -> Void in
                 self.selectPhoto(.PhotoLibrary)
             }
             alert.addAction(selectAction)
         }
-        let cancelAction = UIAlertAction(title: NSLocalizedString("general.cancel", comment: ""), style: .Cancel, handler: nil)
+        let cancelAction = UIAlertAction(title: "general.cancel".localized, style: .Cancel, handler: nil)
         alert.addAction(cancelAction)
         presentViewController(alert, animated: true, completion: nil)
     }
@@ -214,7 +221,7 @@ class AddViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         if UIImagePickerController.isSourceTypeAvailable(.PhotoLibrary) {
             let imagePicker = UIImagePickerController()
             imagePicker.delegate = self
-            imagePicker.mediaTypes = [kUTTypeImage]
+            imagePicker.mediaTypes = [kUTTypeImage as String]
             imagePicker.allowsEditing = false
             imagePicker.sourceType = sourceType
             
@@ -245,9 +252,11 @@ class AddViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     
     // MARK: - Keyboard Handling
     
+    /*
     func dismissKeyboard() {
         descriptionField.resignFirstResponder()
     }
+    */
     
     func keyboardWillShow(notification: NSNotification) {
         if let userInfo = notification.userInfo as? Dictionary<NSString, AnyObject>, keyboardRect = userInfo[UIKeyboardFrameEndUserInfoKey] as? NSValue {

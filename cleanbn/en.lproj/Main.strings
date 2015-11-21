@@ -12,7 +12,7 @@
 "CHY-Mf-00g.text" = "Title";
 
 /* Class = "UINavigationItem"; title = "Concern"; ObjectID = "D7u-2H-SZC"; */
-"D7u-2H-SZC.title" = "Concern";
+"D7u-2H-SZC.title" = "Concerns";
 
 /* Class = "UILabel"; text = "Service Title"; ObjectID = "KTB-Yd-cGT"; */
 "KTB-Yd-cGT.text" = "Service Title";
@@ -43,3 +43,5 @@
 
 /* Class = "UIButton"; normalTitle = "Category"; ObjectID = "oEF-Wo-xQe"; */
 "oEF-Wo-xQe.normalTitle" = "Service";
+
+"BOM-JJ-rkT.text" = "The selected location does not belong to the City of Bonn";

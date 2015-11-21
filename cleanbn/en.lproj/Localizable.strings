@@ -33,5 +33,5 @@
 "submission.error.text" = "Your concern could not be submitted. Please connect to the internet and try again.";
 
 "location.invalid.title" = "Invalid Location";
-"location.invalid.text" = "The selected location is not part of the City of Bonn and therefore can’t be handled.";
+"location.invalid.text" = "The selected location is not belong to the City of Bonn and therefore can’t be handled.";
 "location.unknown.title" = "Unknown Address";
