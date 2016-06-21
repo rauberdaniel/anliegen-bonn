@@ -38,24 +38,24 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
         
         // Add Settings Button
         let settingsIcon = UIImage(named: "SettingsIcon")
-        let settingsButton = UIBarButtonItem(image: settingsIcon, style: .Plain, target: self, action: "showSettings:")
+        let settingsButton = UIBarButtonItem(image: settingsIcon, style: .Plain, target: self, action: #selector(LocationSelectionViewController.showSettings(_:)))
         self.navigationItem.leftBarButtonItem = settingsButton
         
         // Add Library Button
-        let libraryButton = UIBarButtonItem(barButtonSystemItem: .Bookmarks, target: self, action: "showLibrary:")
+        let libraryButton = UIBarButtonItem(barButtonSystemItem: .Bookmarks, target: self, action: #selector(LocationSelectionViewController.showLibrary(_:)))
         self.navigationItem.rightBarButtonItem = libraryButton
         
         // Add Gesture Recognizers
-        let panRecognizer = UIPanGestureRecognizer(target: self, action: "handlePan:")
+        let panRecognizer = UIPanGestureRecognizer(target: self, action: #selector(LocationSelectionViewController.handlePan(_:)))
         panRecognizer.delegate = self
         panRecognizer.minimumNumberOfTouches = 1
         mapView.addGestureRecognizer(panRecognizer)
         
-        let pinchRecognizer = UIPinchGestureRecognizer(target: self, action: "handlePan:")
+        let pinchRecognizer = UIPinchGestureRecognizer(target: self, action: #selector(LocationSelectionViewController.handlePan(_:)))
         pinchRecognizer.delegate = self
         mapView.addGestureRecognizer(pinchRecognizer)
         
-        let tapRecognizer = UITapGestureRecognizer(target: self, action: "handleTap:")
+        let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(LocationSelectionViewController.handleTap(_:)))
         mapView.addGestureRecognizer(tapRecognizer)
         
         locationManager.delegate = self
@@ -210,7 +210,7 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
     // MARK: - MapViewDelegate
     
     func mapView(mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
-        dragging++
+        dragging += 1
         updateLocationName()
         // lift the blob
         UIView.animateWithDuration(0.2, delay: 0, options: UIViewAnimationOptions.BeginFromCurrentState, animations: { () -> Void in
@@ -219,7 +219,7 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
     }
     
     func mapView(mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
-        dragging--
+        dragging -= 1
         let coord = mapView.convertPoint(CGPointMake(mapView.frame.width/2, mapView.frame.height/2+32), toCoordinateFromView: mapView)
         location = CLLocation(latitude: coord.latitude, longitude: coord.longitude)
         // lower the blob
@@ -256,7 +256,7 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
     }
     
     func showRequestsOnMap() {
-        ApiHandler.sharedHandler.getConcerns { (concerns) -> Void in
+        ApiHandler.sharedHandler.getConcerns { (concerns, error) -> Void in
             for concern in concerns.filter(self.concernStateOpen) {
                 if let coordinate = concern.location?.coordinate {
                     let pin = MKPointAnnotation()

@@ -45,7 +45,7 @@ class AddViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         super.viewDidLoad()
         // Do view setup here.
         
-        let tapRecognizer = UITapGestureRecognizer(target: self, action: "dismissKeyboard")
+        let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(UIInputViewController.dismissKeyboard))
         self.view.addGestureRecognizer(tapRecognizer)
         
         /*
@@ -55,15 +55,15 @@ class AddViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         descriptionField.delegate = self
         */
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardWillShow:", name: UIKeyboardWillShowNotification, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardDidHide:", name: UIKeyboardWillHideNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(AddViewController.keyboardWillShow(_:)), name: UIKeyboardWillShowNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(AddViewController.keyboardDidHide(_:)), name: UIKeyboardWillHideNotification, object: nil)
         
         locationButton.setTitle(locationName, forState: .Normal)
         
-        sendButton.addTarget(self, action: "sendConcern:", forControlEvents: .TouchUpInside)
+        sendButton.addTarget(self, action: #selector(AddViewController.sendConcern(_:)), forControlEvents: .TouchUpInside)
         
         let middleButtonsEdgeInset = UIEdgeInsetsMake(70, 0, 0, 0)
-        photoButton.addTarget(self, action: "attachPhoto:", forControlEvents: .TouchUpInside)
+        photoButton.addTarget(self, action: #selector(AddViewController.attachPhoto(_:)), forControlEvents: .TouchUpInside)
         photoButton.titleEdgeInsets = middleButtonsEdgeInset
         serviceButton.titleLabel?.numberOfLines = 2
         serviceButton.titleLabel?.lineBreakMode = .ByWordWrapping

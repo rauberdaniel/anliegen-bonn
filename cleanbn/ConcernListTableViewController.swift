@@ -19,7 +19,7 @@ class ConcernListTableViewController: UITableViewController {
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: "close:")
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: #selector(ConcernListTableViewController.close(_:)))
 
         self.tableView.rowHeight = 60
         
@@ -27,10 +27,14 @@ class ConcernListTableViewController: UITableViewController {
             ownConcerns = requestsSent
         }
         
-        ApiHandler.sharedHandler.getConcerns { (concerns) -> Void in
-            print("ConcernList :: ReceivedConcerns :: \(concerns.count)")
-            self.concerns = concerns
-            self.tableView.reloadData()
+        ApiHandler.sharedHandler.getConcerns { (concerns, error) -> Void in
+            if let error = error {
+                print("ConcernList :: ReceivedConcerns :: ERROR :: \(error)")
+            } else {
+                print("ConcernList :: ReceivedConcerns :: \(concerns.count)")
+                self.concerns = concerns
+                self.tableView.reloadData()
+            }
         }
     }
 

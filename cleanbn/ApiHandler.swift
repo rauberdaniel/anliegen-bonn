@@ -53,13 +53,15 @@ class ApiHandler: NSObject {
     /**
         Returns an array of the last 50 concerns submitted
     */
-    func getConcerns(completionHandler: ([Concern]) -> Void) {
+    func getConcerns(completionHandler: ([Concern], NSError?) -> Void) {
         let url = NSURL(string: baseUrl+"requests.json")
         let request = NSURLRequest(URL: url!)
         NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue(), completionHandler: { (response, data, error) -> Void in
             if(error == nil){
                 let concerns = self.parseConcerns(data!)
-                completionHandler(concerns)
+                completionHandler(concerns, nil)
+            } else {
+                completionHandler([], error)
             }
         })
     }
@@ -96,7 +98,7 @@ class ApiHandler: NSObject {
                     do {
                         jsonData = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableLeaves)
                         
-                        if let jsonDict = jsonData[0] as? Dictionary<String,String>, requestID = jsonDict["service_request_id"] {
+                        if let jsonDict = (jsonData as! NSArray)[0] as? Dictionary<String,String>, requestID = jsonDict["service_request_id"] {
                             // requestID like "A-4523"
                             NSUserDefaults.standardUserDefaults().mutableArrayValueForKey("requestsSent").addObject(requestID)
                             print("ApiHandler :: SubmitConcernForm :: Submitted :: \(requestID)")

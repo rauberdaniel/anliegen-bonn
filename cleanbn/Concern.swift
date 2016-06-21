@@ -114,6 +114,7 @@ class Concern: NSObject, CLLocationManagerDelegate {
         do {
             data = try NSJSONSerialization.dataWithJSONObject(dict, options: NSJSONWritingOptions())
         } catch let error as NSError {
+            print(error)
             data = nil
         }
         return data
