@@ -19,7 +19,7 @@ class Service: NSObject, NSCoding {
     }
     
     required init?(coder aDecoder: NSCoder) {
-        let dict = aDecoder.decodeObjectForKey("service") as! [String:String]
+        let dict = aDecoder.decodeObject(forKey: "service") as! [String:String]
         self.code = dict["code"]!
         self.name = dict["name"]!
     }
@@ -28,8 +28,8 @@ class Service: NSObject, NSCoding {
         return "Service (\(code) | \(name))"
     }
     
-    func encodeWithCoder(aCoder: NSCoder) {
-        aCoder.encodeObject(["code":code,"name":name], forKey: "service")
+    func encode(with aCoder: NSCoder) {
+        aCoder.encode(["code":code,"name":name], forKey: "service")
         
     }
     

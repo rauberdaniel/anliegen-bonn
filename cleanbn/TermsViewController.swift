@@ -18,17 +18,17 @@ class TermsViewController: UIViewController, UIWebViewDelegate {
         
         webView.delegate = self
         
-        var url: NSURL?
+        var url: URL?
         if type == "privacy" {
             title = "Datenschutzhinweise"
-            url = NSURL(string: "http://anliegen.bonn.de/seiten/datenschutzhinweise")
+            url = URL(string: "http://anliegen.bonn.de/seiten/datenschutzhinweise")
         }
         if type == "rules" {
             title = "Nutzungsregeln"
-            url = NSURL(string: "http://anliegen.bonn.de/seiten/regeln")
+            url = URL(string: "http://anliegen.bonn.de/seiten/regeln")
         }
         if let url = url {
-            let request = NSURLRequest(URL: url)
+            let request = URLRequest(url: url)
             webView.loadRequest(request)
         }
     }
@@ -40,10 +40,10 @@ class TermsViewController: UIViewController, UIWebViewDelegate {
     
     // MARK: - WebView Delegate
     
-    func webView(webView: UIWebView, shouldStartLoadWithRequest request: NSURLRequest, navigationType: UIWebViewNavigationType) -> Bool {
-        if navigationType == .LinkClicked {
-            if let url = request.URL {
-                UIApplication.sharedApplication().openURL(url)
+    func webView(_ webView: UIWebView, shouldStartLoadWith request: URLRequest, navigationType: UIWebViewNavigationType) -> Bool {
+        if navigationType == .linkClicked {
+            if let url = request.url {
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
                 return false
             }
         }

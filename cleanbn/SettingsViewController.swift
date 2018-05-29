@@ -14,8 +14,8 @@ class SettingsViewController: UITableViewController {
         super.viewDidLoad()
         
         // Do any additional setup after loading the view.
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: #selector(SettingsViewController.submit(_:)))
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Cancel, target: self, action: #selector(SettingsViewController.close(_:)))
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(SettingsViewController.submit(_:)))
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(SettingsViewController.close(_:)))
         tableView.rowHeight = 60
     }
     
@@ -27,51 +27,51 @@ class SettingsViewController: UITableViewController {
     
     // MARK: - View Controls
     
-    func submit(sender: AnyObject) {
-        let userDefaults = NSUserDefaults.standardUserDefaults()
+    @objc func submit(_ sender: AnyObject) {
+        let userDefaults = UserDefaults.standard
         var success: Bool = false
-        if let mailCell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 0)) {
-            if let mailField = mailCell.viewWithTag(2) as? UITextField, mailFieldText = mailField.text {
+        if let mailCell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) {
+            if let mailField = mailCell.viewWithTag(2) as? UITextField, let mailFieldText = mailField.text {
                 if ValidationHandler.isValidEmail(mailFieldText) {
-                    userDefaults.setObject(mailField.text, forKey: "email")
+                    userDefaults.set(mailField.text, forKey: "email")
                     success = true
                     
-                    if userDefaults.boolForKey("termsAccepted") {
-                        self.dismissViewControllerAnimated(true, completion: nil)
+                    if userDefaults.bool(forKey: "termsAccepted") {
+                        self.dismiss(animated: true, completion: nil)
                     } else {
-                        let termsAlert = UIAlertController(title: "Nutzungsbedingungen", message: "Hiermit stimmst du zu, dass du die Nutzungsregeln und Datenschutzhinweise gelesen hast und diese akzeptierst.", preferredStyle: .Alert)
-                        let confirmAction = UIAlertAction(title: "Zustimmen", style: .Default, handler: { (action) -> Void in
-                            userDefaults.setBool(true, forKey: "termsAccepted")
+                        let termsAlert = UIAlertController(title: "Nutzungsbedingungen", message: "Hiermit stimmst du zu, dass du die Nutzungsregeln und Datenschutzhinweise gelesen hast und diese akzeptierst.", preferredStyle: .alert)
+                        let confirmAction = UIAlertAction(title: "Zustimmen", style: .default, handler: { (action) -> Void in
+                            userDefaults.set(true, forKey: "termsAccepted")
                             userDefaults.synchronize()
-                            self.dismissViewControllerAnimated(true, completion: nil)
+                            self.dismiss(animated: true, completion: nil)
                         })
                         termsAlert.addAction(confirmAction)
-                        let cancelAction = UIAlertAction(title: "Abbrechen", style: .Cancel, handler: nil)
+                        let cancelAction = UIAlertAction(title: "Abbrechen", style: .cancel, handler: nil)
                         termsAlert.addAction(cancelAction)
-                        self.presentViewController(termsAlert, animated: true, completion: nil)
+                        self.present(termsAlert, animated: true, completion: nil)
                     }
                 }
             }
         }
         if !success {
-            let alert = UIAlertController(title: "Ungültige Adresse", message: "Die angegebene Adresse ist keine gültige E-Mail Adresse.", preferredStyle: .Alert)
-            let closeAction = UIAlertAction(title: "Ok", style: .Cancel, handler: nil)
+            let alert = UIAlertController(title: "Ungültige Adresse", message: "Die angegebene Adresse ist keine gültige E-Mail Adresse.", preferredStyle: .alert)
+            let closeAction = UIAlertAction(title: "Ok", style: .cancel, handler: nil)
             alert.addAction(closeAction)
-            self.presentViewController(alert, animated: true, completion: nil)
+            self.present(alert, animated: true, completion: nil)
         }
     }
     
-    func close(sender: AnyObject) {
-        self.dismissViewControllerAnimated(true, completion: nil)
+    @objc func close(_ sender: AnyObject) {
+        self.dismiss(animated: true, completion: nil)
     }
     
     // MARK: - TableViewController
     
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    override func numberOfSections(in tableView: UITableView) -> Int {
         return 2
     }
     
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
         case 0:
             return 1
@@ -82,17 +82,17 @@ class SettingsViewController: UITableViewController {
         }
     }
     
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.section == 0 {
-            let cell = tableView.dequeueReusableCellWithIdentifier("MailCell")!
+            let cell = tableView.dequeueReusableCell(withIdentifier: "MailCell")!
             
-            if let mail = NSUserDefaults.standardUserDefaults().stringForKey("email") {
+            if let mail = UserDefaults.standard.string(forKey: "email") {
                 (cell.viewWithTag(2) as! UITextField).text = mail
             }
             return cell
         }
         
-        let cell = tableView.dequeueReusableCellWithIdentifier("TermsCell")!
+        let cell = tableView.dequeueReusableCell(withIdentifier: "TermsCell")!
         
         if indexPath.row == 0 {
             cell.textLabel?.text = "Datenschutzhinweise"
@@ -103,7 +103,7 @@ class SettingsViewController: UITableViewController {
         return cell
     }
     
-    override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         switch section {
         case 0:
             return "E-Mail Adresse"
@@ -114,7 +114,7 @@ class SettingsViewController: UITableViewController {
         }
     }
     
-    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.section == 1 {
             if indexPath.row == 0 {
                 
@@ -125,9 +125,9 @@ class SettingsViewController: UITableViewController {
     // MARK: - Navigation
     
     // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showTerms" {
-            if let dest = segue.destinationViewController as? TermsViewController {
+            if let dest = segue.destination as? TermsViewController {
                 if tableView.indexPathForSelectedRow?.row == 0 {
                     dest.type = "privacy"
                 }

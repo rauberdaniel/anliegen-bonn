@@ -16,7 +16,7 @@ class AddressManager: NSObject {
         return _AddressManagerInstance
     }
     
-    func getAddressStringFromPlacemark(placemark: CLPlacemark?, includeLocality: Bool) -> String {
+    func getAddressStringFromPlacemark(_ placemark: CLPlacemark?, includeLocality: Bool) -> String {
         var street = "location.unknown.title".localized
         var locality = ""
         if let placemark = placemark {
@@ -28,7 +28,7 @@ class AddressManager: NSObject {
                 }
             }
             if (placemark.locality != nil && placemark.postalCode != nil) {
-                locality = ", \(placemark.postalCode) \(placemark.locality)"
+                locality = ", \(String(describing: placemark.postalCode)) \(String(describing: placemark.locality))"
             }
         }
         if includeLocality {

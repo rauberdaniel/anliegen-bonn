@@ -14,7 +14,7 @@ import CoreGraphics
 class Concern: NSObject, CLLocationManagerDelegate {
     
     var id: String?
-    var dateReported: NSDate?
+    var dateReported: Date?
     var locationName: String?
     var location: CLLocation? {
         didSet {
@@ -23,7 +23,7 @@ class Concern: NSObject, CLLocationManagerDelegate {
     }
     var desc: String = ""
     var service: Service
-    var imageUrl: NSURL?
+    var imageUrl: URL?
     var state: String?
     var image: UIImage?
     
@@ -36,15 +36,15 @@ class Concern: NSObject, CLLocationManagerDelegate {
             self.id = id
         }
         if let reportedString = dict["requested_datetime"] as? String {
-            if let date = NSDate.dateFromISOString(reportedString) {
+            if let date = Date.dateFromISOString(reportedString) {
                 dateReported = date
             } else {
-                dateReported = NSDate()
+                dateReported = Date()
             }
         } else {
-            dateReported = NSDate()
+            dateReported = Date()
         }
-        if let name = dict["service_name"] as? String, code = dict["service_code"] as? String {
+        if let name = dict["service_name"] as? String, let code = dict["service_code"] as? String {
             service = Service(code: code, name: name)
         } else {
             service = Service(code: "0000", name: "Undefined")
@@ -55,10 +55,10 @@ class Concern: NSObject, CLLocationManagerDelegate {
         if let description = dict["description"] as? String {
             desc = description
         }
-        if let lat = dict["lat"] as? NSNumber, lon = dict["long"] as? NSNumber {
+        if let lat = dict["lat"] as? NSNumber, let lon = dict["long"] as? NSNumber {
             location = CLLocation(latitude: lat.doubleValue, longitude: lon.doubleValue)
         }
-        if let imageUrlString = dict["media_url"] as? String, imageUrl = NSURL(string: imageUrlString) {
+        if let imageUrlString = dict["media_url"] as? String, let imageUrl = URL(string: imageUrlString) {
             self.imageUrl = imageUrl
         }
         if let state = dict["status"] as? String {
@@ -81,11 +81,11 @@ class Concern: NSObject, CLLocationManagerDelegate {
         geocoder.reverseGeocodeLocation(location!, completionHandler: { (placemarks, error) -> Void in
             if let placemarks = placemarks {
                 let placemark = placemarks[0];
-                self.locationName = "\(placemark.thoroughfare) \(placemark.subThoroughfare)"
+                self.locationName = "\(String(describing: placemark.thoroughfare)) \(String(describing: placemark.subThoroughfare))"
             }
         })    }
     
-    func getImageData() -> NSData? {
+    func getImageData() -> Data? {
         if let image = image {
             let imageData = UIImageJPEGRepresentation(image, 0.6)
             return imageData
@@ -93,26 +93,26 @@ class Concern: NSObject, CLLocationManagerDelegate {
         return nil
     }
     
-    func getJSONData() -> NSData? {
+    func getJSONData() -> Data? {
         var dict: Dictionary<String, AnyObject> = [:]
-        dict["service_name"] = service.name
-        dict["service_code"] = service.code
-        dict["lat"] = location?.coordinate.latitude
-        dict["long"] = location?.coordinate.longitude
-        dict["address"] = locationName
-        dict["description"] = desc
-        if let mail = NSUserDefaults.standardUserDefaults().stringForKey("email") {
-            dict["email"] = mail
+        dict["service_name"] = service.name as AnyObject
+        dict["service_code"] = service.code as AnyObject
+        dict["lat"] = location?.coordinate.latitude as AnyObject
+        dict["long"] = location?.coordinate.longitude as AnyObject
+        dict["address"] = locationName as AnyObject
+        dict["description"] = desc as AnyObject
+        if let mail = UserDefaults.standard.string(forKey: "email") {
+            dict["email"] = mail as AnyObject
         }
         
         if let imageData = getImageData() {
-            let base64ImageString = imageData.base64EncodedStringWithOptions([])
-            dict["image"] = base64ImageString
+            let base64ImageString = imageData.base64EncodedString(options: [])
+            dict["image"] = base64ImageString as AnyObject
         }
         
-        let data: NSData?
+        let data: Data?
         do {
-            data = try NSJSONSerialization.dataWithJSONObject(dict, options: NSJSONWritingOptions())
+            data = try JSONSerialization.data(withJSONObject: dict, options: JSONSerialization.WritingOptions())
         } catch let error as NSError {
             print(error)
             data = nil
@@ -121,7 +121,7 @@ class Concern: NSObject, CLLocationManagerDelegate {
     }
     
     func getFormString() -> String? {
-        if let mail = NSUserDefaults.standardUserDefaults().stringForKey("email"), lat = location?.coordinate.latitude, long = location?.coordinate.longitude {
+        if let mail = UserDefaults.standard.string(forKey: "email"), let lat = location?.coordinate.latitude, let long = location?.coordinate.longitude {
             var string = "service_code=\(service.code)&lat=\(lat)&long=\(long)&description=\(desc)&email=\(mail)"
             if let mediaUrl = imageUrl {
                 string += "&media_url=\(mediaUrl.absoluteString)"

@@ -21,8 +21,8 @@ class ServiceManager: NSObject {
     }
     
     func getServices() -> [Service] {
-        if let data = NSUserDefaults.standardUserDefaults().objectForKey("services") as? NSData {
-            if let services = NSKeyedUnarchiver.unarchiveObjectWithData(data) as? [Service] {
+        if let data = UserDefaults.standard.object(forKey: "services") as? Data {
+            if let services = NSKeyedUnarchiver.unarchiveObject(with: data) as? [Service] {
                 return services
             }
         }
@@ -32,8 +32,8 @@ class ServiceManager: NSObject {
     func updateServices() {
         print("ServiceManager :: Updating");
         ApiHandler.sharedHandler.getServices { (services) -> Void in
-            let data = NSKeyedArchiver.archivedDataWithRootObject(services)
-            NSUserDefaults.standardUserDefaults().setObject(data, forKey: "services")
+            let data = NSKeyedArchiver.archivedData(withRootObject: services)
+            UserDefaults.standard.set(data, forKey: "services")
             print("ServiceManager :: Updated")
         }
     }

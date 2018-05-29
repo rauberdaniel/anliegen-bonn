@@ -19,11 +19,11 @@ class ConcernListTableViewController: UITableViewController {
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: #selector(ConcernListTableViewController.close(_:)))
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(ConcernListTableViewController.close(_:)))
 
         self.tableView.rowHeight = 60
         
-        if let requestsSent = NSUserDefaults.standardUserDefaults().arrayForKey("requestsSent") as? [String] {
+        if let requestsSent = UserDefaults.standard.array(forKey: "requestsSent") as? [String] {
             ownConcerns = requestsSent
         }
         
@@ -45,53 +45,53 @@ class ConcernListTableViewController: UITableViewController {
     
     // MARK: - Navigation
     
-    func close(sender: AnyObject) {
-        self.dismissViewControllerAnimated(true, completion: nil)
+    @objc func close(_ sender: AnyObject) {
+        self.dismiss(animated: true, completion: nil)
     }
 
     // MARK: - Table view data source
 
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    override func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Potentially incomplete method implementation.
         // Return the number of sections.
         return 1
     }
 
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete method implementation.
         // Return the number of rows in the section.
         if let concerns = concerns {
             tableView.backgroundView = nil
-            tableView.separatorStyle = .SingleLine
+            tableView.separatorStyle = .singleLine
             
             return concerns.count
         }
         
         let backgroundLabel = UILabel(frame: tableView.frame)
         backgroundLabel.text = "Anliegen werden geladen"
-        backgroundLabel.textAlignment = .Center
+        backgroundLabel.textAlignment = .center
         backgroundLabel.textColor = UIColor(white: 0, alpha: 0.2)
         tableView.backgroundView = UIView(frame: tableView.frame)
         tableView.backgroundView?.addSubview(backgroundLabel)
-        tableView.separatorStyle = .None
+        tableView.separatorStyle = .none
         
         return 0
     }
 
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("ConcernCell", forIndexPath: indexPath) 
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "ConcernCell", for: indexPath) 
 
         // Configure the cell...
         if let concerns = concerns {
             let concern = concerns[indexPath.row]
-            if let id = concern.id, date = concern.dateReported {
+            if let id = concern.id, let date = concern.dateReported {
                 if ownConcerns.contains(id) {
                     // this request was sent by the user
                     cell.imageView?.backgroundColor = UIColor(white: 0.9, alpha: 1)
                 } else {
                     cell.imageView?.backgroundColor = nil
                 }
-                let shortDateString = NSDate.shortStringFromDate(date)
+                let shortDateString = Date.shortStringFromDate(date)
                 cell.textLabel?.text = "\(id) – \(concern.service.name)"
                 var detailString = "\(shortDateString)"
                 if let locationName = concern.locationName {

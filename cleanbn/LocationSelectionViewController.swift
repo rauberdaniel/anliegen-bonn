@@ -9,6 +9,30 @@
 import UIKit
 import MapKit
 import CoreLocation
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l < r
+  case (nil, _?):
+    return true
+  default:
+    return false
+  }
+}
+
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l > r
+  default:
+    return rhs < lhs
+  }
+}
+
 
 class LocationSelectionViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDelegate, UIGestureRecognizerDelegate {
     @IBOutlet weak var _invalidLoationBannerConstraint: NSLayoutConstraint!
@@ -34,15 +58,15 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
     
     override func viewDidLoad() {
         mapView.delegate = self
-        mapView.rotateEnabled = false
+        mapView.isRotateEnabled = false
         
         // Add Settings Button
         let settingsIcon = UIImage(named: "SettingsIcon")
-        let settingsButton = UIBarButtonItem(image: settingsIcon, style: .Plain, target: self, action: #selector(LocationSelectionViewController.showSettings(_:)))
+        let settingsButton = UIBarButtonItem(image: settingsIcon, style: .plain, target: self, action: #selector(LocationSelectionViewController.showSettings(_:)))
         self.navigationItem.leftBarButtonItem = settingsButton
         
         // Add Library Button
-        let libraryButton = UIBarButtonItem(barButtonSystemItem: .Bookmarks, target: self, action: #selector(LocationSelectionViewController.showLibrary(_:)))
+        let libraryButton = UIBarButtonItem(barButtonSystemItem: .bookmarks, target: self, action: #selector(LocationSelectionViewController.showLibrary(_:)))
         self.navigationItem.rightBarButtonItem = libraryButton
         
         // Add Gesture Recognizers
@@ -67,10 +91,10 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
         hideInvalidLocationBanner()
         
         // Disable UserLocation Button when UserLocation is denied
-        userLocationButton.enabled = false
-        if CLLocationManager.authorizationStatus() == .AuthorizedWhenInUse {
+        userLocationButton.isEnabled = false
+        if CLLocationManager.authorizationStatus() == .authorizedWhenInUse {
             // UserLocation is allowed
-            userLocationButton.enabled = true
+            userLocationButton.isEnabled = true
         }
         
         streetLabel.text = "general.locating".localized
@@ -83,8 +107,8 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
             customLocation = false
             
             // use UserLocation if available
-            if CLLocationManager.authorizationStatus() == .AuthorizedWhenInUse {
-                userLocationButton.selected = true
+            if CLLocationManager.authorizationStatus() == .authorizedWhenInUse {
+                userLocationButton.isSelected = true
                 startMonitoringLocation()
             } else {
                 // Reverse Geocode start location
@@ -96,7 +120,7 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
         }
     }
     
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         //_invalidLoationBannerConstraint.constant = 20
     }
     
@@ -141,98 +165,101 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
     
     // MARK: - Gesture Handling
     
-    func handleTap(sender: UIGestureRecognizer) {
+    @objc func handleTap(_ sender: UIGestureRecognizer) {
         customLocation = true
-        userLocationButton.selected = false
+        userLocationButton.isSelected = false
     }
     
-    func handlePan(sender: UIGestureRecognizer) {
+    @objc func handlePan(_ sender: UIGestureRecognizer) {
         customLocation = true
-        userLocationButton.selected = false
-        if sender.state == UIGestureRecognizerState.Began {
+        userLocationButton.isSelected = false
+        if sender.state == UIGestureRecognizerState.began {
             //updateLocationName()
         }
-        if sender.state == UIGestureRecognizerState.Ended {
+        if sender.state == UIGestureRecognizerState.ended {
             //updateLocationName()
         }
     }
     
-    func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWithGestureRecognizer otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         return true
     }
     
     // MARK: - Navigation
     
-    func showSettings(sender: AnyObject) {
-        self.performSegueWithIdentifier("showSettings", sender: self)
+    @objc func showSettings(_ sender: AnyObject) {
+        self.performSegue(withIdentifier: "showSettings", sender: self)
     }
     
-    func showLibrary(sender: AnyObject) {
-        self.performSegueWithIdentifier("showLibrary", sender: self)
+    @objc func showLibrary(_ sender: AnyObject) {
+        self.performSegue(withIdentifier: "showLibrary", sender: self)
     }
     
     // MARK: - LocationManagerDelegate
     
-    func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
-        if status == .AuthorizedWhenInUse || status == .AuthorizedAlways {
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        if status == .authorizedWhenInUse || status == .authorizedAlways {
             // permission granted
             startMonitoringLocation()
-            userLocationButton.enabled = true
+            userLocationButton.isEnabled = true
         } else {
-            userLocationButton.enabled = false
+            userLocationButton.isEnabled = false
         }
     }
     
-    func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         let newLocation = locations[0]
         userLocation = newLocation
         
         if !customLocation {
             // following user location
-            if location == nil || userLocation?.distanceFromLocation(location!) > 5 {
+            if location == nil || userLocation?.distance(from: location!) > 5 {
                 // only update location if it has changed at least 5 meters
                 moveToLocation(newLocation)
             }
         }
     }
     
-    func locationManager(manager: CLLocationManager, didFailWithError error: NSError) {
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         print("LocationManager :: DidFail")
-        if error.code == CLError.Denied.rawValue {
+        print("\(error)")
+        /*
+        if error.code == CLError.Code.denied.rawValue {
             // Location Services are not allowed
             locationManager.stopUpdatingLocation()
-            userLocationButton.enabled = false
-            userLocationButton.selected = false
+            userLocationButton.isEnabled = false
+            userLocationButton.isSelected = false
             print("LocationManager :: Denied")
         }
+ */
     }
     
     // MARK: - MapViewDelegate
     
-    func mapView(mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
+    func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
         dragging += 1
         updateLocationName()
         // lift the blob
-        UIView.animateWithDuration(0.2, delay: 0, options: UIViewAnimationOptions.BeginFromCurrentState, animations: { () -> Void in
-            self.locationMarker.transform = CGAffineTransformMakeScale(1.2, 1.2)
+        UIView.animate(withDuration: 0.2, delay: 0, options: UIViewAnimationOptions.beginFromCurrentState, animations: { () -> Void in
+            self.locationMarker.transform = CGAffineTransform(scaleX: 1.2, y: 1.2)
             }, completion: nil)
     }
     
-    func mapView(mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
+    func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
         dragging -= 1
-        let coord = mapView.convertPoint(CGPointMake(mapView.frame.width/2, mapView.frame.height/2+32), toCoordinateFromView: mapView)
+        let coord = mapView.convert(CGPoint(x: mapView.frame.width/2, y: mapView.frame.height/2+32), toCoordinateFrom: mapView)
         location = CLLocation(latitude: coord.latitude, longitude: coord.longitude)
         // lower the blob
-        UIView.animateWithDuration(0.2, delay: 0, options: UIViewAnimationOptions.BeginFromCurrentState, animations: { () -> Void in
-            self.locationMarker.transform = CGAffineTransformIdentity
+        UIView.animate(withDuration: 0.2, delay: 0, options: UIViewAnimationOptions.beginFromCurrentState, animations: { () -> Void in
+            self.locationMarker.transform = CGAffineTransform.identity
             }, completion: nil)
     }
     
     // MARK: - Map Controller
     
-    @IBAction func locateUser(sender: UIButton) {
+    @IBAction func locateUser(_ sender: UIButton) {
         if let userLocation = userLocation {
-            sender.selected = true
+            sender.isSelected = true
             customLocation = false
             location = userLocation
             moveToLocation(userLocation)
@@ -244,14 +271,14 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
         locationManager.startUpdatingLocation()
     }
     
-    func moveToLocation(location: CLLocation) {
+    func moveToLocation(_ location: CLLocation) {
         let span = MKCoordinateSpanMake(0.0024, 0.0024)
         let region: MKCoordinateRegion = MKCoordinateRegionMake(location.coordinate, span)
         mapView.setRegion(region, animated: animateToNewLocation)
         animateToNewLocation = true
     }
     
-    func concernStateOpen(concern: Concern) -> Bool {
+    func concernStateOpen(_ concern: Concern) -> Bool {
         return concern.state == "open"
     }
     
@@ -273,12 +300,12 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
     
     func showInvalidLocationBanner() {
         print("InvalidLocatioBanner :: show")
-        invalidLocationBanner.hidden = false
+        invalidLocationBanner.isHidden = false
         self.view.layoutIfNeeded()
         
         self._invalidLoationBannerConstraint.constant = 0
         
-        UIView.animateWithDuration(0.2, animations: { () -> Void in
+        UIView.animate(withDuration: 0.2, animations: { () -> Void in
             self.view.layoutIfNeeded()
         })
     }
@@ -289,27 +316,27 @@ class LocationSelectionViewController: UIViewController, CLLocationManagerDelega
         
         self._invalidLoationBannerConstraint.constant = -60
         
-        UIView.animateWithDuration(0.2, animations: { () -> Void in
+        UIView.animate(withDuration: 0.2, animations: { () -> Void in
             self.view.layoutIfNeeded()
-        }) { (completion) -> Void in
-            self.invalidLocationBanner.hidden = true
-        }
+        }, completion: { (completion) -> Void in
+            self.invalidLocationBanner.isHidden = true
+        }) 
     }
     
     // MARK: - Seagues
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "nextStep" {
             if !ValidationHandler.isValidLocation(location) {
-                let cancelAction = UIAlertAction(title: "general.cancel".localized, style: .Cancel, handler: nil)
+                let cancelAction = UIAlertAction(title: "general.cancel".localized, style: .cancel, handler: nil)
                 let alertTitle = "location.invalid.title".localized
                 let alertText = "location.invalid.text".localized
-                let alert = UIAlertController(title: alertTitle, message: alertText, preferredStyle: .Alert)
+                let alert = UIAlertController(title: alertTitle, message: alertText, preferredStyle: .alert)
                 alert.addAction(cancelAction)
-                self.presentViewController(alert, animated: true, completion: nil)
+                self.present(alert, animated: true, completion: nil)
                 return
             }
-            if let dest = segue.destinationViewController as? AddViewController {
+            if let dest = segue.destination as? AddViewController {
                 dest.location = location
                 dest.locationName = streetLabel.text
             }

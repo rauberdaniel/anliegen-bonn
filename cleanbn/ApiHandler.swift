@@ -13,7 +13,7 @@ private let _ApiHandlerInstance = ApiHandler()
 
 class ApiHandler: NSObject {
     
-    let baseUrl = "http://anliegen.bonn.de/georeport/v2/"
+    let baseUrl = "https://anliegen.bonn.de/georeport/v2/"
     let imageUrl = "http://cleanbn.danielrauber.de/image.php"
     
     class var sharedHandler: ApiHandler {
@@ -23,25 +23,25 @@ class ApiHandler: NSObject {
     /**
         Returns an array of services provided by the API
     */
-    func getServices(completionHandler: ([Service]) -> Void) {
-        let url = NSURL(string: baseUrl+"services.json")
-        let request = NSURLRequest(URL: url!, cachePolicy: NSURLRequestCachePolicy.ReloadIgnoringLocalCacheData, timeoutInterval: 10)
-        NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue(), completionHandler: { (response, data, error) -> Void in
+    func getServices(_ completionHandler: @escaping ([Service]) -> Void) {
+        let url = URL(string: baseUrl+"services.json")
+        let request = URLRequest(url: url!, cachePolicy: NSURLRequest.CachePolicy.reloadIgnoringLocalCacheData, timeoutInterval: 10)
+        URLSession.shared.dataTask(with: request) { (data, response, error) in
             if error == nil {
                 let services = self.parseServices(data!)
                 completionHandler(services)
             } else {
-                print("Error: \(error?.localizedDescription)")
+                print("Error: \(String(describing: error?.localizedDescription))")
             }
-        })
+        }
     }
     
-    private func parseServices(data: NSData) -> [Service] {
+    fileprivate func parseServices(_ data: Data) -> [Service] {
         var output = [Service]()
-        let services = (try! NSJSONSerialization.JSONObjectWithData(data, options: .MutableLeaves)) as! NSArray
+        let services = (try! JSONSerialization.jsonObject(with: data, options: .mutableLeaves)) as! NSArray
         for s in services {
             if let sDict:NSDictionary = s as? NSDictionary {
-                if let sCode = sDict["service_code"] as? String, sName = sDict["service_name"] as? String {
+                if let sCode = sDict["service_code"] as? String, let sName = sDict["service_name"] as? String {
                     let service = Service(code: sCode, name: sName)
                     output.append(service)
                 }
@@ -53,22 +53,22 @@ class ApiHandler: NSObject {
     /**
         Returns an array of the last 50 concerns submitted
     */
-    func getConcerns(completionHandler: ([Concern], NSError?) -> Void) {
-        let url = NSURL(string: baseUrl+"requests.json")
-        let request = NSURLRequest(URL: url!)
-        NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue(), completionHandler: { (response, data, error) -> Void in
+    func getConcerns(_ completionHandler: @escaping ([Concern], NSError?) -> Void) {
+        let url = URL(string: baseUrl+"requests.json")
+        let request = URLRequest(url: url!)
+        URLSession.shared.dataTask(with: request) { (data, response, error) in
             if(error == nil){
                 let concerns = self.parseConcerns(data!)
                 completionHandler(concerns, nil)
             } else {
-                completionHandler([], error)
+                completionHandler([], error! as NSError)
             }
-        })
+        }
     }
     
-    private func parseConcerns(data: NSData) -> [Concern] {
+    fileprivate func parseConcerns(_ data: Data) -> [Concern] {
         var output = [Concern]()
-        let concerns = (try! NSJSONSerialization.JSONObjectWithData(data, options: .MutableLeaves)) as! NSArray
+        let concerns = (try! JSONSerialization.jsonObject(with: data, options: .mutableLeaves)) as! NSArray
         for c in concerns {
             if let cDict:NSDictionary = c as? NSDictionary {
                 let concern = Concern(fromDictionary: cDict)
@@ -81,37 +81,37 @@ class ApiHandler: NSObject {
     /**
         Submits a concern by uploading a potential image and sending the concern data to the API
     */
-    func submitConcern(concern: Concern, sender: AddViewController) {
+    func submitConcern(_ concern: Concern, sender: AddViewController) {
         let submissionTitle = "submission.processing.title".localized
         let submissionText = "submission.processing.text".localized
-        let progressAlert = UIAlertController(title: submissionTitle, message: submissionText, preferredStyle: .Alert)
-        sender.presentViewController(progressAlert, animated: true, completion: nil)
+        let progressAlert = UIAlertController(title: submissionTitle, message: submissionText, preferredStyle: .alert)
+        sender.present(progressAlert, animated: true, completion: nil)
         
-        let closeAction = UIAlertAction(title: "general.ok".localized, style: .Cancel, handler: nil)
+        let closeAction = UIAlertAction(title: "general.ok".localized, style: .cancel, handler: nil)
         
         uploadImage(concern, sender: sender, completionHandler: { (imageUrl) -> Void in
             concern.imageUrl = imageUrl
             self.submitConcernForm(concern, completionHandler: { (data, response, error) -> Void in
                 if error == nil {
-                    var jsonData : AnyObject
+                    var jsonData : Any
                     
                     do {
-                        jsonData = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableLeaves)
+                        jsonData = try JSONSerialization.jsonObject(with: data!, options: .mutableLeaves)
                         
-                        if let jsonDict = (jsonData as! NSArray)[0] as? Dictionary<String,String>, requestID = jsonDict["service_request_id"] {
+                        if let jsonDict = (jsonData as! NSArray)[0] as? Dictionary<String,String>, let requestID = jsonDict["service_request_id"] {
                             // requestID like "A-4523"
-                            NSUserDefaults.standardUserDefaults().mutableArrayValueForKey("requestsSent").addObject(requestID)
+                            UserDefaults.standard.mutableArrayValue(forKey: "requestsSent").add(requestID)
                             print("ApiHandler :: SubmitConcernForm :: Submitted :: \(requestID)")
                             
                             let successTitle = "submission.done.title".localized
                             let successText = "submission.done.text".localized
-                            let successAlert = UIAlertController(title: successTitle, message: successText, preferredStyle: UIAlertControllerStyle.Alert)
-                            let closeAndBackAction = UIAlertAction(title: "general.ok".localized, style: .Cancel, handler: { (action) -> Void in
-                                sender.navigationController?.popViewControllerAnimated(true)
+                            let successAlert = UIAlertController(title: successTitle, message: successText, preferredStyle: UIAlertControllerStyle.alert)
+                            let closeAndBackAction = UIAlertAction(title: "general.ok".localized, style: .cancel, handler: { (action) -> Void in
+                                sender.navigationController?.popViewController(animated: true)
                             })
                             successAlert.addAction(closeAndBackAction)
-                            progressAlert.dismissViewControllerAnimated(true, completion: { () -> Void in
-                                sender.presentViewController(successAlert, animated: true, completion: nil)
+                            progressAlert.dismiss(animated: true, completion: { () -> Void in
+                                sender.present(successAlert, animated: true, completion: nil)
                             })
                         }
                     } catch let error {
@@ -120,14 +120,14 @@ class ApiHandler: NSObject {
                     
                 } else {
                     // Connection Error
-                    print("ApiHandler :: SubmitConcernForm :: Error :: \(error.localizedDescription) :: \(NSString(data: data, encoding: NSUTF8StringEncoding))")
-                    sender.sendButton.enabled = true
+                    print("ApiHandler :: SubmitConcernForm :: Error :: \(String(describing: error?.localizedDescription)) :: \(String(describing: NSString(data: data!, encoding: String.Encoding.utf8.rawValue)))")
+                    sender.sendButton.isEnabled = true
                     let errorTitle = "submission.error.title".localized
                     let errorText = "submission.error.text".localized
-                    let errorAlert = UIAlertController(title: errorTitle, message: errorText, preferredStyle: .Alert)
+                    let errorAlert = UIAlertController(title: errorTitle, message: errorText, preferredStyle: .alert)
                     errorAlert.addAction(closeAction)
-                    progressAlert.dismissViewControllerAnimated(true, completion: { () -> Void in
-                        sender.presentViewController(errorAlert, animated: true, completion: nil)
+                    progressAlert.dismiss(animated: true, completion: { () -> Void in
+                        sender.present(errorAlert, animated: true, completion: nil)
                     })
                 }
             })
@@ -137,22 +137,23 @@ class ApiHandler: NSObject {
     /**
         Submits the concern data to the API
     */
-    private func submitConcernForm(concern: Concern, completionHandler: (data: NSData!, response: NSURLResponse!, error: NSError!) -> Void) {
-        let url = NSURL(string: baseUrl+"requests.json")
+    fileprivate func submitConcernForm(_ concern: Concern, completionHandler: (_ data: Data?, _ response: URLResponse?, _ error: NSError?) -> Void) {
+        let url = URL(string: baseUrl+"requests.json")
         
         let formString = concern.getFormString()
         
         if let formString = formString {
             let dataString = AuthenticationHandler.sharedHandler.getAuthenticatedDataString(formString)
-            let data = dataString.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)
+            let data = dataString.data(using: String.Encoding.utf8, allowLossyConversion: false)
             if let data = data {
-                let request = NSMutableURLRequest(URL: url!)
-                request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-                request.setValue("\(data.length)", forHTTPHeaderField: "Content-Length")
-                request.HTTPMethod = "POST"
-                request.HTTPBody = data
+                var request = URLRequest.init(url: url!)
                 
-                let dataTask = NSURLSession.sharedSession().dataTaskWithRequest(request)
+                request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+                request.setValue("\(data.count)", forHTTPHeaderField: "Content-Length")
+                request.httpMethod = "POST"
+                request.httpBody = data
+                
+                let dataTask = URLSession.shared.dataTask(with: request)
                 dataTask.resume()
             } else {
                 print("ApiHandler :: Data Encoding failed")
@@ -165,36 +166,36 @@ class ApiHandler: NSObject {
     /**
         Uploads the potential image of a concern to a separate server
     */
-    private func uploadImage(concern: Concern, sender: AddViewController, completionHandler: (imageUrl: NSURL?) -> Void) {
-        let url = NSURL(string: imageUrl)
+    fileprivate func uploadImage(_ concern: Concern, sender: AddViewController, completionHandler: @escaping (_ imageUrl: URL?) -> Void) {
+        let url = URL(string: imageUrl)
         if let imageData = concern.getImageData() {
-            let base64ImageString = imageData.base64EncodedStringWithOptions([])
-            let base64ImageData = base64ImageString.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)
+            let base64ImageString = imageData.base64EncodedString(options: [])
+            let base64ImageData = base64ImageString.data(using: String.Encoding.utf8, allowLossyConversion: false)
             // Create and Send Request, call completionhandler with returned url
-            let request = NSMutableURLRequest(URL: url!)
+            var request = URLRequest(url: url!)
             request.setValue("image/jpeg", forHTTPHeaderField: "Content-Type")
-            request.setValue("\(base64ImageData?.length)", forHTTPHeaderField: "Content-Length")
-            request.HTTPMethod = "POST"
-            request.HTTPBody = base64ImageData
+            request.setValue("\(String(describing: base64ImageData?.count))", forHTTPHeaderField: "Content-Length")
+            request.httpMethod = "POST"
+            request.httpBody = base64ImageData
             
             print("ApiHandler :: Upload Image")
             
-            let dataTask = NSURLSession.sharedSession().dataTaskWithRequest(request, completionHandler: { (data, response, error) -> Void in
-                if let data = data, imageUrlString = NSString(data: data, encoding: NSUTF8StringEncoding) as? String, imageUrl = NSURL(string: imageUrlString) {
+            let dataTask = URLSession.shared.dataTask(with: request, completionHandler: { (data, response, error) -> Void in
+                if let data = data, let imageUrlString = NSString(data: data, encoding: String.Encoding.utf8.rawValue) as String?, let imageUrl = URL(string: imageUrlString) {
                     print("ApiHandler :: Image uploaded :: \(imageUrl)")
-                    completionHandler(imageUrl: imageUrl)
+                    completionHandler(imageUrl)
                 } else {
-                    print("ApiHandler :: Image upload failed :: \(error?.localizedDescription)")
+                    print("ApiHandler :: Image upload failed :: \(String(describing: error?.localizedDescription))")
                     let errorTitle = "submission.error.title".localized
                     let errorText = "submission.error.text".localized
-                    let alert = UIAlertController(title: errorTitle, message: errorText, preferredStyle: .Alert)
-                    alert.addAction(UIAlertAction(title: "general.ok".localized, style: .Cancel, handler: nil))
-                    sender.presentViewController(alert, animated: true, completion: nil)
+                    let alert = UIAlertController(title: errorTitle, message: errorText, preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "general.ok".localized, style: .cancel, handler: nil))
+                    sender.present(alert, animated: true, completion: nil)
                 }
             })
             dataTask.resume()
         } else {
-            completionHandler(imageUrl: nil)
+            completionHandler(nil)
         }
     }
 }
