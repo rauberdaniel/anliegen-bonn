@@ -21,11 +21,11 @@ class TermsViewController: UIViewController, UIWebViewDelegate {
         var url: URL?
         if type == "privacy" {
             title = "Datenschutzhinweise"
-            url = URL(string: "http://anliegen.bonn.de/seiten/datenschutzhinweise")
+            url = URL(string: "https://anliegen.bonn.de/seiten/Datenschutzhinweise")
         }
         if type == "rules" {
             title = "Nutzungsregeln"
-            url = URL(string: "http://anliegen.bonn.de/seiten/regeln")
+            url = URL(string: "https://anliegen.bonn.de/seiten/Regeln")
         }
         if let url = url {
             let request = URLRequest(url: url)

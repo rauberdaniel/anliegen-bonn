@@ -42,6 +42,8 @@
 			<false/>
 		</dict>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>Die Kamera kann zum Aufnehmen eines Fotos zu deinem Anliegen genutzt werden.</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

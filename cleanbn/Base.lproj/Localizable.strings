@@ -35,3 +35,6 @@
 "location.invalid.title" = "Ungültige Position";
 "location.invalid.text" = "Die ausgewählte Position gehört nicht zur Stadt Bonn und kann deshalb nicht erfasst werden.";
 "location.unknown.title" = "Adresse unbekannt";
+
+"concern.description" = "Beschreibung";
+"concern.description.message" = "Gib eine Beschreibung ein.";

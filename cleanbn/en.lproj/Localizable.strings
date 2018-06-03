@@ -35,3 +35,6 @@
 "location.invalid.title" = "Invalid Location";
 "location.invalid.text" = "The selected location is not belong to the City of Bonn and therefore can’t be handled.";
 "location.unknown.title" = "Unknown Address";
+
+"concern.description" = "Description";
+"concern.description.message" = "Enter a Description.";

@@ -14,7 +14,7 @@ private let _ApiHandlerInstance = ApiHandler()
 class ApiHandler: NSObject {
     
     let baseUrl = "https://anliegen.bonn.de/georeport/v2/"
-    let imageUrl = "http://cleanbn.danielrauber.de/image.php"
+    let imageUrl = "https://cleanbn.danielrauber.de/image.php"
     
     class var sharedHandler: ApiHandler {
         return _ApiHandlerInstance
@@ -54,16 +54,22 @@ class ApiHandler: NSObject {
         Returns an array of the last 50 concerns submitted
     */
     func getConcerns(_ completionHandler: @escaping ([Concern], NSError?) -> Void) {
+        print("GetConcerns")
         let url = URL(string: baseUrl+"requests.json")
         let request = URLRequest(url: url!)
-        URLSession.shared.dataTask(with: request) { (data, response, error) in
+        
+        let dataTask = URLSession.shared.dataTask(with: request, completionHandler: { (data, response, error) in
+            print("Reponse")
+            
             if(error == nil){
                 let concerns = self.parseConcerns(data!)
                 completionHandler(concerns, nil)
             } else {
                 completionHandler([], error! as NSError)
             }
-        }
+        })
+        
+        dataTask.resume()
     }
     
     fileprivate func parseConcerns(_ data: Data) -> [Concern] {
@@ -92,11 +98,14 @@ class ApiHandler: NSObject {
         uploadImage(concern, sender: sender, completionHandler: { (imageUrl) -> Void in
             concern.imageUrl = imageUrl
             self.submitConcernForm(concern, completionHandler: { (data, response, error) -> Void in
+                
                 if error == nil {
                     var jsonData : Any
                     
                     do {
                         jsonData = try JSONSerialization.jsonObject(with: data!, options: .mutableLeaves)
+                        
+                        print(jsonData)
                         
                         if let jsonDict = (jsonData as! NSArray)[0] as? Dictionary<String,String>, let requestID = jsonDict["service_request_id"] {
                             // requestID like "A-4523"
@@ -109,6 +118,7 @@ class ApiHandler: NSObject {
                             let closeAndBackAction = UIAlertAction(title: "general.ok".localized, style: .cancel, handler: { (action) -> Void in
                                 sender.navigationController?.popViewController(animated: true)
                             })
+                            print("We should be fine")
                             successAlert.addAction(closeAndBackAction)
                             progressAlert.dismiss(animated: true, completion: { () -> Void in
                                 sender.present(successAlert, animated: true, completion: nil)
@@ -137,7 +147,7 @@ class ApiHandler: NSObject {
     /**
         Submits the concern data to the API
     */
-    fileprivate func submitConcernForm(_ concern: Concern, completionHandler: (_ data: Data?, _ response: URLResponse?, _ error: NSError?) -> Void) {
+    fileprivate func submitConcernForm(_ concern: Concern, completionHandler: @escaping (_ data: Data?, _ response: URLResponse?, _ error: Error?) -> Void) {
         let url = URL(string: baseUrl+"requests.json")
         
         let formString = concern.getFormString()
@@ -153,7 +163,8 @@ class ApiHandler: NSObject {
                 request.httpMethod = "POST"
                 request.httpBody = data
                 
-                let dataTask = URLSession.shared.dataTask(with: request)
+                let dataTask = URLSession.shared.dataTask(with: request, completionHandler: completionHandler)
+                
                 dataTask.resume()
             } else {
                 print("ApiHandler :: Data Encoding failed")

@@ -41,6 +41,23 @@ class AddViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     
     // MARK: - Setup
     
+    @IBAction func descriptionTab(_ sender: Any) {
+        let alertController = UIAlertController(title: "concern.description".localized, message: "concern.description.message".localized, preferredStyle: .alert)
+        
+        let confirmAction = UIAlertAction(title: "general.ok".localized, style: .default) { (_) in
+            self.concernDescription = alertController.textFields?[0].text
+        }
+        
+        alertController.addTextField { (textfield) in
+            textfield.placeholder = "concern.description".localized
+            textfield.text = self.concernDescription
+        }
+        
+        alertController.addAction(confirmAction)
+        
+        self.present(alertController, animated: true, completion: nil)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do view setup here.
